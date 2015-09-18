@@ -209,7 +209,7 @@ public:
     /// \param value the key value
     /// \return the hash value of the key
     ///
-    static size_t hash(const K& value);void processMethod(Method* method, MethodDeclaration* declaration);
+    static size_t hash(const K& value);
 };
 
 

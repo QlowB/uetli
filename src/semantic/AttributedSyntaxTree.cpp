@@ -39,25 +39,25 @@ void EffectiveClass::addMethod(Method* method)
 }
 
 
-size_t getNFields(void) const
+size_t EffectiveClass::getNFields(void) const
 {
     return fields.size();
 }
 
 
-size_t getNMethods(void) const
+size_t EffectiveClass::getNMethods(void) const
 {
     return methods.size();
 }
 
 
-Field* getField(size_t index)
+Field* EffectiveClass::getField(size_t index)
 {
     return fields[index];
 }
 
 
-Method* getMethod(size_t index)
+Method* EffectiveClass::getMethod(size_t index)
 {
     return methods[index];
 }
@@ -106,13 +106,13 @@ Expression::~Expression(void)
 }
 
 
-NewVariableStatement(Class* type, const std::string& name) :
-	type(type), name(name)
+NewVariableStatement::NewVariableStatement(Class* type, const std::string& name, Scope* scope) :
+    newVariable(type, name, scope)
 {
 }
 
 
-AssignmentStatement(Variable* lvalue, Expression* rvalue) :
+AssignmentStatement::AssignmentStatement(Variable* lvalue, Expression* rvalue) :
     lvalue(lvalue), rvalue(rvalue)
 {
 }
@@ -130,15 +130,15 @@ Field::Field(Class* wrapper, Class* returnType, const std::string& name) :
 }
 
 
-Method::Method(Class* returnType, const std::string& name) :
-    Feature(returnType, name)
+Method::Method(Class* wrapper, Class* returnType, const std::string& name) :
+    Feature(wrapper, returnType, name)
 {
 }
 
 
 Scope* Method::getMethodScope(void)
 {
-    return methodScope;
+    return &methodScope;
 }
 
 

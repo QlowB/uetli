@@ -38,25 +38,25 @@ MethodDeclaration::MethodDeclaration(const std::string& type, const std::string&
 }
 
 
-NewVariableInstruction::NewVariableInstruction(const std::string& type, const std::string& name) :
+NewVariableStatement::NewVariableStatement(const std::string& type, const std::string& name) :
     type(type), name(name)
 {
 }
 
 
-NewVariableInstruction::NewVariableInstruction(const std::string& type, const std::string& name, Expression* initialValue) :
+NewVariableStatement::NewVariableStatement(const std::string& type, const std::string& name, Expression* initialValue) :
     type(type), name(name), initialValue(initialValue)
 {
 }
 
 
-AssignmentInstruction::AssignmentInstruction(Expression* leftSide, Expression* rightSide) :
+AssignmentStatement::AssignmentStatement(Expression* leftSide, Expression* rightSide) :
 	leftSide(leftSide), rightSide(rightSide)
 {
 }
 
 
-DoEndBlock::DoEndBlock(const std::vector<Instruction *>& instructions):
+DoEndBlock::DoEndBlock(const std::vector<Statement *>& instructions):
     instructions(instructions)
 {
 }

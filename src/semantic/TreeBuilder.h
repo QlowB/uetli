@@ -19,7 +19,6 @@ namespace uetli
 
 class uetli::semantic::TreeBuilder
 {
-
     std::vector<uetli::parser::ClassDeclaration*> declarations;
     std::vector<uetli::semantic::EffectiveClass*> parsedClasses;
     uetli::util::HashMap<std::string, EffectiveClass*> classesByName;
@@ -38,6 +37,8 @@ private:
     void addFeatures(EffectiveClass* effClass, const uetli::parser::ClassDeclaration* declaration);
 
     void processMethod(Method* method, uetli::parser::MethodDeclaration* declaration);
+
+    void processStatement(uetli::parser::Statement*);
 };
 
 

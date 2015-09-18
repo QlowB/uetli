@@ -30,7 +30,8 @@ void TreeBuilder::build(void)
 
 
     while(!methodsToProcess.empty()) {
-        MethodLink ml = methodsToProcess.pop();
+        MethodLink ml = methodsToProcess.front();
+        methodsToProcess.pop();
         processMethod(ml.second, ml.first);
     }
 }
@@ -41,7 +42,6 @@ void TreeBuilder::addFeatures(EffectiveClass* effClass, const ClassDeclaration* 
 
     typedef std::vector<FeatureDeclaration*>::const_iterator FdIter;
     typedef std::vector<EffectiveClass*>::iterator PcIter;
-
 
 
     const std::vector<FeatureDeclaration*>& features = declaration->features;

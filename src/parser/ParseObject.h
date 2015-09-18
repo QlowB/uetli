@@ -17,9 +17,9 @@ namespace uetli
                 struct FieldDeclaration;
                 struct MethodDeclaration;
 
-            struct Instruction;
-                struct NewVariableInstruction;
-                struct AssignmentInstruction;
+            struct Statement;
+                struct NewVariableStatement;
+                struct AssignmentStatement;
                 struct DoEndBlock;
 
             struct Expression;
@@ -100,7 +100,7 @@ struct uetli::parser::MethodDeclaration : virtual public FeatureDeclaration
 };
 
 
-struct uetli::parser::Instruction : virtual public ParseObject
+struct uetli::parser::Statement : virtual public ParseObject
 {
 };
 
@@ -108,37 +108,37 @@ struct uetli::parser::Instruction : virtual public ParseObject
 ///
 /// \brief declaration of a variable in a scope
 ///
-struct uetli::parser::NewVariableInstruction : virtual public Instruction
+struct uetli::parser::NewVariableStatement : virtual public Statement
 {
     std::string type;
     std::string name;
     Expression* initialValue;
 
-    NewVariableInstruction(const std::string& type, const std::string& name);
-    NewVariableInstruction(const std::string& type, const std::string& name, Expression* initialValue);
+    NewVariableStatement(const std::string& type, const std::string& name);
+    NewVariableStatement(const std::string& type, const std::string& name, Expression* initialValue);
 };
 
 
 ///
 /// \brief assignment
 ///
-struct uetli::parser::AssignmentInstruction : virtual public Instruction
+struct uetli::parser::AssignmentStatement : virtual public Statement
 {
     Expression* leftSide;
     Expression* rightSide;
 
-    AssignmentInstruction(Expression* leftSide, Expression* rightSide);
+    AssignmentStatement(Expression* leftSide, Expression* rightSide);
 };
 
 
 ///
 /// \brief collection of instructions between do and end
 ///
-struct uetli::parser::DoEndBlock : virtual public Instruction
+struct uetli::parser::DoEndBlock : virtual public Statement
 {
-    std::vector<Instruction*> instructions;
+    std::vector<Statement*> instructions;
 
-    DoEndBlock(const std::vector<Instruction*>& instructions);
+    DoEndBlock(const std::vector<Statement*>& instructions);
 };
 
 
@@ -151,7 +151,7 @@ struct uetli::parser::Expression : virtual public ParseObject
 /// \brief an expression representing a function call. This can be an full statement
 ///        or an expression returning a value. It can also represent a variable identifier.
 ///
-struct uetli::parser::CallInstruction : virtual public Instruction, virtual public Expression
+struct uetli::parser::CallInstruction : virtual public Statement, virtual public Expression
 {
     std::string methodName;
     std::vector<Expression*> arguments;
@@ -161,7 +161,7 @@ struct uetli::parser::CallInstruction : virtual public Instruction, virtual publ
 };
 
 
-struct uetli::parser::OperationExpression : virtual public Instruction, virtual public Expression
+struct uetli::parser::OperationExpression : virtual public Statement, virtual public Expression
 {
     std::string operatorToken;
 
@@ -193,7 +193,7 @@ struct uetli::parser::UnaryOperationExpression : public OperationExpression
 
 
 
-struct uetli::parser::ArgumentDeclaration : virtual public Instruction
+struct uetli::parser::ArgumentDeclaration : virtual public Statement
 {
     std::string type;
     std::string name;

@@ -43,6 +43,7 @@ std::vector<uetli::parser::ClassDeclaration*>* parsedClasses = 0;
 
 
     uetli::parser::Instruction* instruction;
+    uetli::parser::AssignmentInstruction* assignmentInstruction;
     uetli::parser::CallInstruction* callInstruction;
     uetli::parser::DoEndBlock* doEndBlock;
 
@@ -79,6 +80,7 @@ std::vector<uetli::parser::ClassDeclaration*>* parsedClasses = 0;
 %type <methodDeclaration> methodDeclaration
 
 %type <instruction> instruction
+%type <assignmentInstruction> assignment
 %type <callInstruction> callInstruction
 %type <doEndBlock> doEndBlock
 
@@ -229,12 +231,8 @@ instruction:
         $$ = $1;
     }
     |
-    assignmentInstruction {
-    	$$ = $1;
-    }
-    |
     assignment {
-    	$$ = $1
+        $$ = $1;
     };
 
 

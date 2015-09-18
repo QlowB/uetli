@@ -127,9 +127,9 @@ V* uetli::util::HashMap<K, V, H>::getReference(const K& key) throw()
 template <typename K, typename V, typename H>
 const V& uetli::util::HashMap<K, V, H>::get(const K& key) const
 {
-    const V* ret = getReference();
+    const V* ret = getReference(key);
     if (ret != 0)
-        return ret;
+        return *ret;
     else
         throw NoEntryException("Invalid key");
 }
@@ -138,9 +138,9 @@ const V& uetli::util::HashMap<K, V, H>::get(const K& key) const
 template <typename K, typename V, typename H>
 V& uetli::util::HashMap<K, V, H>::get(const K& key)
 {
-    V* ret = getReference();
+    V* ret = getReference(key);
     if (ret != 0)
-        return ret;
+        return *ret;
     else
         throw NoEntryException("Invalid key");
 }

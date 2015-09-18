@@ -12,12 +12,13 @@ namespace uetli
             class ClassReference;
             class EffectiveClass;
 
-		class Scope;
+        class Scope;
         class Variable;
 
         class Statement;
             class StatementBlock;
-        	class NewVariableStatement;
+            class NewVariableStatement;
+            class AssignmentStatement;
         class Expression;
 
         class Feature;
@@ -73,7 +74,7 @@ class uetli::semantic::Scope
 {
     Scope* parentScope;
 public:
-	Scope(void);
+    Scope(void);
 
     void setParentScope(Scope* parentScope);
 };
@@ -81,11 +82,11 @@ public:
 
 class uetli::semantic::Variable
 {
-	Class* type;
-	std::string name;
-	Scope* scope;
+    Class* type;
+    std::string name;
+    Scope* scope;
 public:
-	Variable(Class* type, const std::string& name, Scope* scope);
+    Variable(Class* type, const std::string& name, Scope* scope);
 };
 
 
@@ -117,9 +118,9 @@ public:
 
 class uetli::semantic::NewVariableStatement : public Statement
 {
-	Variable newVariable;
+    Variable newVariable;
 public:
-	NewVariableStatement(Class* type, const std::string& name);
+    NewVariableStatement(Class* type, const std::string& name, Scope* scope);
 };
 
 
@@ -160,7 +161,7 @@ class uetli::semantic::Method : public Feature
     Scope methodScope;
     StatementBlock content;
 public:
-    Method(Class* returnType, const std::string& name);
+    Method(Class* wrapper, Class* returnType, const std::string& name);
 
     Scope* getMethodScope(void);
 

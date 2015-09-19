@@ -1,3 +1,24 @@
+// ============================================================================
+//
+// This file is part of the uetli compiler.
+//
+// Copyright (C) 2014-2015 Nicolas Winkler
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// ============================================================================
+
 #ifndef UETLI_PARSER_PARSEOBJECT_H_
 #define UETLI_PARSER_PARSEOBJECT_H_
 
@@ -23,7 +44,7 @@ namespace uetli
                 struct DoEndBlock;
 
             struct Expression;
-                struct CallInstruction;
+                struct CallStatement;
                 struct OperationExpression;
                 struct BinaryOperationExpression;
                 struct UnaryOperationExpression;
@@ -136,9 +157,9 @@ struct uetli::parser::AssignmentStatement : virtual public Statement
 ///
 struct uetli::parser::DoEndBlock : virtual public Statement
 {
-    std::vector<Statement*> instructions;
+    std::vector<Statement*> statements;
 
-    DoEndBlock(const std::vector<Statement*>& instructions);
+    DoEndBlock(const std::vector<Statement*>& statements);
 };
 
 
@@ -151,13 +172,13 @@ struct uetli::parser::Expression : virtual public ParseObject
 /// \brief an expression representing a function call. This can be an full statement
 ///        or an expression returning a value. It can also represent a variable identifier.
 ///
-struct uetli::parser::CallInstruction : virtual public Statement, virtual public Expression
+struct uetli::parser::CallStatement : virtual public Statement, virtual public Expression
 {
     std::string methodName;
     std::vector<Expression*> arguments;
 
-    CallInstruction(const std::string& methodName);
-    CallInstruction(const std::string& methodName, const std::vector<Expression*>& arguments);
+    CallStatement(const std::string& methodName);
+    CallStatement(const std::string& methodName, const std::vector<Expression*>& arguments);
 };
 
 

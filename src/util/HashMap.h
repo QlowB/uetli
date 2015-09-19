@@ -1,4 +1,24 @@
-#pragma once
+// ============================================================================
+//
+// This file is part of the uetli compiler.
+//
+// Copyright (C) 2014-2015 Nicolas Winkler
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// ============================================================================
+
 #ifndef UETLI_UTIL_HASHMAP_H_
 #define UETLI_UTIL_HASHMAP_H_
 
@@ -31,6 +51,8 @@ namespace uetli
 ///
 /// \tparam H a hash-class which should implement the static function:
 ///           <code>static size_t H::hash(const K&);</code>
+///
+/// \author Nicolas Winkler
 ///
 template <typename K, typename V, typename H = uetli::util::DefaultHash<K> >
 class uetli::util::HashMap
@@ -199,6 +221,8 @@ private:
 ///
 /// \tparam K type of the key value
 ///
+/// \author Nicolas Winkler
+///
 template <typename K>
 class uetli::util::DefaultHash
 {
@@ -221,6 +245,8 @@ namespace util
 ///
 /// hash function for class <code>std::string</code>
 ///
+/// \author Nicolas Winkler
+///
 template <>
 class DefaultHash<std::string>
 {
@@ -241,6 +267,8 @@ public:
 ///
 /// This exception class is thrown by the uetli::util::HashMap class
 /// to indicate that a desired entry does not exist.
+///
+/// \author Nicolas Winkler
 ///
 class uetli::util::NoEntryException : public std::exception
 {

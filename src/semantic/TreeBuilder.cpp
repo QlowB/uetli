@@ -1,8 +1,30 @@
+// ============================================================================
+//
+// This file is part of the uetli compiler.
+//
+// Copyright (C) 2014-2015 Nicolas Winkler
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// ============================================================================
+
 #include "TreeBuilder.h"
 #include <iostream>
 
 
 
+using namespace uetli;
 using namespace uetli::semantic;
 using namespace uetli::parser;
 
@@ -18,14 +40,14 @@ void TreeBuilder::build(void)
     typedef std::vector<ClassDeclaration*>::const_iterator CdIter;
     for (CdIter i = declarations.begin(); i != declarations.end(); i++) {
         EffectiveClass* ec = new EffectiveClass((*i)->name);
-        parsedClasses.push_back(ec);
+        attributedClasses.push_back(ec);
         classesByName.put((*i)->name, ec);
     }
 
     typedef std::vector<EffectiveClass*>::iterator PcIter;
 
     for (size_t i = 0; i < declarations.size(); i++) {
-        addFeatures(parsedClasses[i], declarations[i]);
+        addFeatures(attributedClasses[i], declarations[i]);
     }
 
 
@@ -77,16 +99,30 @@ void TreeBuilder::addFeatures(EffectiveClass* effClass, const ClassDeclaration* 
 }
 
 
-void processMethod(Method* method, MethodDeclaration* declaration)
+void TreeBuilder::processMethod(Method* method, MethodDeclaration* declaration)
 {
     StatementBlock& methodContent = method->getContent();
     std::vector<Statement*>& statements = methodContent.getStatements();
 
 
-    for (size_t i = 0; i < declaration->body->instructions.size(); i++) {
-        Statement* statement = 0;
+    for (size_t i = 0; i < declaration->body->statements.size(); i++) {
+        semantic::Statement* statement = 0;
         //declaration->body->instructions[i];
     }
 }
+
+
+void TreeBuilder::processStatement(EffectiveClass* ec, Scope* scope, parser::Statement* statement)
+{
+    if (dynamic_cast<parser::CallStatement*> statement)
+}
+
+
+
+
+
+
+
+
 
 

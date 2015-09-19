@@ -50,7 +50,7 @@ std::vector<uetli::parser::ClassDeclaration*>* parsedClasses = 0;
 
 %union {
     std::vector<uetli::parser::ClassDeclaration*>* classes;
-    std::vector<uetli::parser::Instruction*>* instructions;
+    std::vector<uetli::parser::Statement*>* statements;
     std::vector<uetli::parser::FeatureDeclaration*>* featureList;
     std::vector<uetli::parser::ArgumentDeclaration*>* argumentList;
     std::vector<uetli::parser::Expression*>* expressionList;
@@ -63,9 +63,9 @@ std::vector<uetli::parser::ClassDeclaration*>* parsedClasses = 0;
     uetli::parser::MethodDeclaration* methodDeclaration;
 
 
-    uetli::parser::Instruction* instruction;
-    uetli::parser::AssignmentInstruction* assignmentInstruction;
-    uetli::parser::CallInstruction* callInstruction;
+    uetli::parser::Statement* statement;
+    uetli::parser::AssignmentStatement* assignmentStatement;
+    uetli::parser::CallStatement* callStatement;
     uetli::parser::DoEndBlock* doEndBlock;
 
     uetli::parser::Expression* expression;
@@ -90,7 +90,7 @@ std::vector<uetli::parser::ClassDeclaration*>* parsedClasses = 0;
 %type <token> pnl;
 
 %type <classes> classes
-%type <instructions> instructions
+%type <statements> statements
 %type <featureList> featureList
 %type <argumentList> argumentList
 %type <expressionList> expressionList
@@ -100,9 +100,9 @@ std::vector<uetli::parser::ClassDeclaration*>* parsedClasses = 0;
 %type <fieldDeclaration> fieldDeclaration
 %type <methodDeclaration> methodDeclaration
 
-%type <instruction> instruction
-%type <assignmentInstruction> assignment
-%type <callInstruction> callInstruction
+%type <statement> statement
+%type <assignmentStatement> assignmentStatement
+%type <callStatement> callStatement
 %type <doEndBlock> doEndBlock
 
 %type <expression> expression paranthesesExpression
@@ -230,41 +230,41 @@ argumentDeclaration:
 
 
 doEndBlock:
-    DO instructions END {
+    DO statements END {
         $$ = new DoEndBlock(*$2);
         delete $2; $2 = 0;
     };
 
 
-instructions:
+statements:
     pnl {
-        $$ = new std::vector<Instruction*>();
+        $$ = new std::vector<Statement*>();
     }
     |
-    instructions instruction pnl {
+    statements statement pnl {
         $$ = $1;
         $$->push_back($2);
     };
 
 
-instruction:
-    callInstruction {
+statement:
+    callStatement {
         $$ = $1;
     }
     |
-    assignment {
+    assignmentStatement {
         $$ = $1;
     };
 
 
-callInstruction:
+callStatement:
     IDENTIFIER {
-        $$ = new CallInstruction(*$1);
+        $$ = new CallStatement(*$1);
         delete $1; $1 = 0;
     }
     |
     IDENTIFIER ROUND_LEFT expressionList ROUND_RIGHT {
-        $$ = new CallInstruction(*$1, *$3);
+        $$ = new CallStatement(*$1, *$3);
         delete $1; delete $3; $1 = 0; $3 = 0;
     };
 
@@ -283,7 +283,7 @@ expressionList:
 
 
 expression:
-    callInstruction {
+    callStatement {
         $$ = $1;
     }
     |
@@ -340,9 +340,9 @@ paranthesesExpression:
 	};
 
 
-assignment:
+assignmentStatement:
 	expression ASSIGN expression {
-		$$ = new AssignmentInstruction($1, $3);
+		$$ = new AssignmentStatement($1, $3);
 	};
 
 

@@ -23,7 +23,7 @@ namespace uetli
                 struct DoEndBlock;
 
             struct Expression;
-                struct CallInstruction;
+                struct CallStatement;
                 struct OperationExpression;
                 struct BinaryOperationExpression;
                 struct UnaryOperationExpression;
@@ -151,13 +151,13 @@ struct uetli::parser::Expression : virtual public ParseObject
 /// \brief an expression representing a function call. This can be an full statement
 ///        or an expression returning a value. It can also represent a variable identifier.
 ///
-struct uetli::parser::CallInstruction : virtual public Statement, virtual public Expression
+struct uetli::parser::CallStatement : virtual public Statement, virtual public Expression
 {
     std::string methodName;
     std::vector<Expression*> arguments;
 
-    CallInstruction(const std::string& methodName);
-    CallInstruction(const std::string& methodName, const std::vector<Expression*>& arguments);
+    CallStatement(const std::string& methodName);
+    CallStatement(const std::string& methodName, const std::vector<Expression*>& arguments);
 };
 
 

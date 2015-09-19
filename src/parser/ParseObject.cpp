@@ -62,13 +62,13 @@ DoEndBlock::DoEndBlock(const std::vector<Statement *>& instructions):
 }
 
 
-CallInstruction::CallInstruction(const std::string& methodName) :
+CallStatement::CallStatement(const std::string& methodName) :
     methodName(methodName)
 {
 }
 
 
-CallInstruction::CallInstruction(const std::string& methodName, const std::vector<Expression*>& arguments) :
+CallStatement::CallStatement(const std::string& methodName, const std::vector<Expression*>& arguments) :
     methodName(methodName), arguments(arguments)
 {
 }

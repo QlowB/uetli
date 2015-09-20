@@ -20,3 +20,13 @@
 // =============================================================================
 
 
+#include "StackCodeGenerator.h"
+
+
+StackCodeGenerator::StackCodeGenerator(const semantic::Method* method) :
+    method(method)
+{
+}
+
+
+

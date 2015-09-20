@@ -36,7 +36,9 @@ namespace uetli
 
 class uetli::code::StackCodeGenerator
 {
-
+    const semantic::Method* method;
+public:
+    StackCodeGenerator(const semantic::Method* method);
 };
 
 

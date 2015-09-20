@@ -1,4 +1,4 @@
-// ============================================================================
+// =============================================================================
 //
 // This file is part of the uetli compiler.
 //
@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// ============================================================================
+// =============================================================================
 
 #include <cstring>
 
@@ -33,7 +33,7 @@ uetli::util::HashMap<K, V, H>::HashMap(void)
 {
 	size = standardSize;
 	nEntries = 0;
-	entryTable = new Entry*[size];
+    entryTable = new Entry*[size];
 	memset(entryTable, 0, standardSize * sizeof(Entry*));
 	updateHashMask();
 }
@@ -93,7 +93,7 @@ void uetli::util::HashMap<K, V, H>::resize(size_t newSize)
 template <typename K, typename V, typename H>
 void uetli::util::HashMap<K, V, H>::put(const K& key, const V& value)
 {
-	if (double(nEntries) > size * 1.5) {
+    if (nEntries > size + (size / 4)) {
 		resize(size * 2);
 	}
 
@@ -196,14 +196,14 @@ void uetli::util::HashMap<K, V, H>::deleteContent(void)
 
 
 template <typename K, typename V, typename H>
-void uetli::util::HashMap<K, V, H>::updateHashMask(void)
+inline void uetli::util::HashMap<K, V, H>::updateHashMask(void)
 {
 	hashMask = size - 1;
 }
 
 
 template <typename K, typename V, typename H>
-size_t uetli::util::HashMap<K, V, H>::getEntryIndex(const K& key) const
+inline size_t uetli::util::HashMap<K, V, H>::getEntryIndex(const K& key) const
 {
     return hashMask & H::hash(key);
 }
@@ -235,7 +235,7 @@ void uetli::util::HashMap<K, V, H>::putEntry(void* e)
 
 
 template <typename K>
-size_t uetli::util::DefaultHash<K>::hash(const K& key)
+inline size_t uetli::util::DefaultHash<K>::hash(const K& key)
 {
     const void* pointer = &key;
     if (sizeof(K) == sizeof(char)) {
@@ -255,6 +255,9 @@ size_t uetli::util::DefaultHash<K>::hash(const K& key)
     }
     else if (sizeof(K) == sizeof(size_t)) {
         return (size_t) *reinterpret_cast<const size_t*> (pointer);
+    }
+    else if (sizeof(K) == sizeof(void*)) {
+        return (size_t) *reinterpret_cast<void* const*> (pointer);
     }
     else {
         const size_t* valPtr = reinterpret_cast<const size_t*> (pointer);

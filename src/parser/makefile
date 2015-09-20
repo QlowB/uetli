@@ -17,7 +17,7 @@ LIBRARY := libuetli_parser.a
 
 $(LIBRARY): $(OBJECTS)
 	$(AR) rcs $@ $(OBJECTS)
-	clang++ *.o -o prog
+#	clang++ *.o -o prog
 
 
 Parser.cpp: Parser.y Lexer.cpp

@@ -1,4 +1,4 @@
-// ============================================================================
+// =============================================================================
 //
 // This file is part of the uetli compiler.
 //
@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// ============================================================================
+// =============================================================================
 
 #include "AttributedSyntaxTree.h"
 
@@ -84,9 +84,43 @@ Method* EffectiveClass::getMethod(size_t index)
 }
 
 
+Field* EffectiveClass::getField(const std::string& name)
+{
+    Field** f = fieldLinks.getReference(name);
+    return f != 0 ? *f : 0;
+}
+
+
+Method* EffectiveClass::getMethod(const std::string& name)
+{
+    Method** m = methodLinks.getReference(name);
+    return m != 0 ? *m : 0;
+}
+
+
 Scope::Scope(void) :
     parentScope(0)
 {
+}
+
+
+void Scope::setParentScope(Scope* parentScope)
+{
+    this->parentScope = parentScope;
+}
+
+
+Method* Scope::findMethod(const std::string& name)
+{
+    Method** m = methodLinks.getReference(name);
+    if (m != 0)
+        return *m;
+    else if (parentScope != 0) {
+        return parentScope->findMethod(name);
+    }
+    else {
+        return 0;
+    }
 }
 
 
@@ -111,9 +145,43 @@ StatementBlock::StatementBlock(void)
 }
 
 
-std::vector<Statement*>& StatementBlock::getStatements(void)
+size_t StatementBlock::getNStatements(void) const
 {
-    return statements;
+    return statements.size();
+}
+
+Statement* StatementBlock::getStatement(size_t index)
+{
+    return statements[index];
+}
+
+
+void StatementBlock::addStatement(Statement* toSet)
+{
+    NewVariableStatement* nvs = dynamic_cast<NewVariableStatement*> (toSet);
+    if (nvs != 0) {
+        localVariableCount++;
+        localVariables.push_back(nvs->getVariable());
+        variableToIndex.put(nvs->getVariable(), localVariables.size() - 1);
+    }
+    statements.push_back(toSet);
+}
+
+
+size_t StatementBlock::getLocalVariableCount(void) const
+{
+    return localVariableCount;
+}
+
+
+void StatementBlock::generateStatementCode(
+        std::vector<code::StackInstruction*>& code) const
+{
+    typedef std::vector<Statement*>::const_iterator StatIterator;
+    for (StatIterator i = statements.begin(); i != statements.end(); i++) {
+        (*i)->generateStatementCode(code);
+    }
+    code.push_back(new uetli::code::PopInstruction());
 }
 
 
@@ -127,15 +195,99 @@ Expression::~Expression(void)
 }
 
 
-NewVariableStatement::NewVariableStatement(Class* type, const std::string& name, Scope* scope) :
+OperationExpression::OperationExpression(Method* operationMethod) :
+    operationMethod(operationMethod)
+{
+}
+
+
+BinaryOperationExpression::BinaryOperationExpression(Method* operationMethod,
+                                                     Expression* left,
+                                                     Expression* right) :
+    OperationExpression(operationMethod), left(left), right(right)
+{
+}
+
+
+void BinaryOperationExpression::generateExpressionCode(
+        std::vector<code::StackInstruction*>& code) const
+{
+    left->generateExpressionCode(code);
+    right->generateExpressionCode(code);
+
+    code::CallInstruction* callInstruction = new code::CallInstruction(0);
+    code.push_back(callInstruction);
+}
+
+
+UnaryOperationExpression::UnaryOperationExpression(Method* operationMethod,
+                                                   Expression* operand) :
+    OperationExpression(operationMethod), operand(operand)
+{
+}
+
+
+void UnaryOperationExpression::generateExpressionCode(
+        std::vector<code::StackInstruction*>& code) const
+{
+    operand->generateExpressionCode(code);
+
+    code::CallInstruction* callInstruction = new code::CallInstruction(0);
+    code.push_back(callInstruction);
+}
+
+
+NewVariableStatement::NewVariableStatement(Class* type, const std::string& name,
+                                           Scope* scope) :
     newVariable(type, name, scope)
 {
 }
 
 
+Variable* NewVariableStatement::getVariable(void)
+{
+    return &newVariable;
+}
+
+
+void NewVariableStatement::generateExpressionCode(
+        std::vector<code::StackInstruction*>& code) const
+{
+}
+
+
+
 AssignmentStatement::AssignmentStatement(Variable* lvalue, Expression* rvalue) :
     lvalue(lvalue), rvalue(rvalue)
 {
+}
+
+
+void AssignmentStatement::generateStatementCode(
+        std::vector<code::StackInstruction*>& code) const
+{
+    throw std::string("not yet implemented in file ") + __FILE__;
+}
+
+
+CallStatement::CallStatement(Method* method,
+                             const std::vector<Expression*> arguments) :
+    method(method), arguments(arguments)
+{
+}
+
+
+void CallStatement::generateStatementCode(
+        std::vector<code::StackInstruction*>& code) const
+{
+    throw std::string("not yet implemented in file ") + __FILE__;
+}
+
+
+void CallStatement::generateExpressionCode(
+        std::vector<code::StackInstruction*>& code) const
+{
+    generateStatementCode(code);
 }
 
 
@@ -145,14 +297,33 @@ Feature::Feature(Class* wrapper, Class* returnType, const std::string& name) :
 }
 
 
+Class* Feature::getWrapper(void)
+{
+    return wrapper;
+}
+
+
+Class* Feature::getReturnType(void)
+{
+    return returnType;
+}
+
+
+const std::string& Feature::getName(void) const
+{
+    return name;
+}
+
+
 Field::Field(Class* wrapper, Class* returnType, const std::string& name) :
     Feature(wrapper, returnType, name)
 {
 }
 
 
-Method::Method(Class* wrapper, Class* returnType, const std::string& name) :
-    Feature(wrapper, returnType, name)
+Method::Method(Class* wrapper, Class* returnType, const std::string& name,
+               unsigned int argumentCount) :
+    Feature(wrapper, returnType, name), argumentCount(argumentCount)
 {
 }
 
@@ -168,4 +339,15 @@ StatementBlock& Method::getContent(void)
     return content;
 }
 
+
+const StatementBlock& Method::getContent(void) const
+{
+    return content;
+}
+
+
+unsigned int Method::getArgumentCount(void) const
+{
+    return argumentCount;
+}
 

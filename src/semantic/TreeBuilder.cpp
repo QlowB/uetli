@@ -1,4 +1,4 @@
-// ============================================================================
+// =============================================================================
 //
 // This file is part of the uetli compiler.
 //
@@ -17,10 +17,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// ============================================================================
+// =============================================================================
 
 #include "TreeBuilder.h"
 #include <iostream>
+#include <vector>
 
 
 
@@ -59,7 +60,16 @@ void TreeBuilder::build(void)
 }
 
 
-void TreeBuilder::addFeatures(EffectiveClass* effClass, const ClassDeclaration* declaration)
+const std::vector<uetli::semantic::EffectiveClass*>&
+TreeBuilder::getAttributedClasses(void) const
+{
+    return attributedClasses;
+}
+
+
+
+void TreeBuilder::addFeatures(EffectiveClass* effClass,
+                              const ClassDeclaration* declaration)
 {
 
     typedef std::vector<FeatureDeclaration*>::const_iterator FdIter;
@@ -68,23 +78,27 @@ void TreeBuilder::addFeatures(EffectiveClass* effClass, const ClassDeclaration* 
 
     const std::vector<FeatureDeclaration*>& features = declaration->features;
 
+    FeatureDeclaration* fd;
     try {
         for (FdIter i = features.begin(); i != features.end(); i++) {
-            FeatureDeclaration* fd = *i;
+            fd = *i;
 
-            EffectiveClass* type = classesByName.get(fd->type);
-
-            if (type == 0) {
-                throw "error";
-            }
+            EffectiveClass* type = 0;
+            if (!fd->type.empty()) // if return type not "void"
+                type = classesByName.get(fd->type);
 
             FieldDeclaration* field = dynamic_cast<FieldDeclaration*> (*i);
             MethodDeclaration* method = dynamic_cast<MethodDeclaration*> (*i);
             if (field != 0) {
+                std::cout << "Parsing Field!" << std::endl;
                 effClass->addField(new Field(effClass, type, field->name));
             }
-            else if (method != 0) { // *i is not a field, therefore it must be a method
-                Method* m = new Method(effClass, type, method->name);
+            else if (method != 0) {
+                std::cout << "Parsing Method!" << std::endl;
+
+                // *i is not a field, therefore it must be a method
+                Method* m = new Method(effClass, type, method->name,
+                                       method->arguments.size());
                 effClass->addMethod(m);
                 methodsToProcess.push(MethodLink(method, m));
             }
@@ -94,7 +108,8 @@ void TreeBuilder::addFeatures(EffectiveClass* effClass, const ClassDeclaration* 
         }
     }
     catch (const uetli::util::NoEntryException&) {
-        std::cerr << "Fatal internal error: Please report this to the developer.\n";
+        std::cerr << "Fatal internal error: " << "Invalid Key: " << fd->type <<
+                     ". Please report this to the developer.\n";
     }
 }
 
@@ -102,7 +117,6 @@ void TreeBuilder::addFeatures(EffectiveClass* effClass, const ClassDeclaration* 
 void TreeBuilder::processMethod(Method* method, MethodDeclaration* declaration)
 {
     StatementBlock& methodContent = method->getContent();
-    std::vector<Statement*>& statements = methodContent.getStatements();
 
 
     for (size_t i = 0; i < declaration->body->statements.size(); i++) {
@@ -112,14 +126,16 @@ void TreeBuilder::processMethod(Method* method, MethodDeclaration* declaration)
 }
 
 
-void TreeBuilder::processStatement(EffectiveClass* ec, Scope* scope, parser::Statement* statement)
+void TreeBuilder::processStatement(EffectiveClass* ec, Scope* scope,
+                                   parser::Statement* statement)
 {
-    if (dynamic_cast<parser::CallStatement*> statement)
+    parser::CallStatement* cs =
+            dynamic_cast<parser::CallStatement*> (statement);
+
+    if (cs != 0) {
+
+    }
 }
-
-
-
-
 
 
 

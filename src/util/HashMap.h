@@ -1,4 +1,4 @@
-// ============================================================================
+// =============================================================================
 //
 // This file is part of the uetli compiler.
 //
@@ -17,12 +17,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// ============================================================================
+// =============================================================================
 
 #ifndef UETLI_UTIL_HASHMAP_H_
 #define UETLI_UTIL_HASHMAP_H_
 
 #include <exception>
+#include <vector>
 #include <string>
 
 namespace uetli
@@ -42,7 +43,8 @@ namespace uetli
 
 /// \brief simple hash map
 ///
-/// This class represents a dictionary data structure implemented as a hash table.
+/// This class represents a dictionary data structure implemented as a hash
+/// table.
 ///
 ///
 /// \tparam K the key type
@@ -60,7 +62,7 @@ class uetli::util::HashMap
 private:
 
     /// initial length of the hash table
-    static const size_t standardSize = 64;
+    static const size_t standardSize = 16;
 
     ///
     /// \brief structure to store entries
@@ -76,7 +78,7 @@ private:
 
     /// list of pointers to Entry*, each representing a linked list
     /// containing every entry at the specific position.
-	Entry** entryTable;
+    Entry** entryTable;
 
     /// size of the allocated table (in number of buckets in the table)
     size_t size;
@@ -230,10 +232,10 @@ class uetli::util::DefaultHash
 public:
     ///
     /// \brief calculates a hash function
-    /// \param value the key value
+    /// \param key the key value
     /// \return the hash value of the key
     ///
-    static size_t hash(const K& value);
+    static size_t hash(const K& key);
 };
 
 
@@ -250,14 +252,14 @@ namespace util
 template <>
 class DefaultHash<std::string>
 {
-    DefaultHash(void) {}
+    DefaultHash(void);
 public:
     ///
     /// \brief calculates a hash function
-    /// \param value the key value
+    /// \param key the key value
     /// \return the hash value of the key
     ///
-    static size_t hash(const std::string& value);
+    static size_t hash(const std::string& key);
 };
 
 } // namespace uetli::util

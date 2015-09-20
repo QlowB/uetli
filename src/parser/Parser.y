@@ -1,4 +1,4 @@
-// ============================================================================
+// =============================================================================
 //
 // This file is part of the uetli compiler.
 //
@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// ============================================================================
+// =============================================================================
 
 %{
 
@@ -189,23 +189,24 @@ fieldDeclaration:
 
 
 methodDeclaration:
-    IDENTIFIER COLON IDENTIFIER pnl doEndBlock {
-        $$ = new MethodDeclaration(*$3, *$1, $5);
+    IDENTIFIER COLON IDENTIFIER doEndBlock {
+        $$ = new MethodDeclaration(*$3, *$1, $4);
         delete $3; delete $1; $1 = $3 = 0;
     }
     |
-    IDENTIFIER pnl doEndBlock {
-        $$ = new MethodDeclaration("", *$1, $3);
+    IDENTIFIER doEndBlock {
+        $$ = new MethodDeclaration("", *$1, $2);
         delete $1; $1 = 0;
     }
     |
-    IDENTIFIER ROUND_LEFT argumentList ROUND_RIGHT COLON IDENTIFIER pnl doEndBlock {
-        $$ = new MethodDeclaration(*$6, *$1, $8);
+    IDENTIFIER
+        ROUND_LEFT argumentList ROUND_RIGHT COLON IDENTIFIER doEndBlock {
+        $$ = new MethodDeclaration(*$6, *$1, $7);
         delete $6; delete $1; $1 = $6 = 0;
     }
     |
-    IDENTIFIER ROUND_LEFT argumentList ROUND_RIGHT pnl doEndBlock {
-        $$ = new MethodDeclaration("", *$1, $6);
+    IDENTIFIER ROUND_LEFT argumentList ROUND_RIGHT doEndBlock {
+        $$ = new MethodDeclaration("", *$1, $5);
         delete $1; $1 = 0;
     };
 

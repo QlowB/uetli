@@ -1,4 +1,4 @@
-// ============================================================================
+// =============================================================================
 //
 // This file is part of the uetli compiler.
 //
@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// ============================================================================
+// =============================================================================
 
 
 #ifndef UETLI_SEMANTIC_TREEBUILDER_H_
@@ -68,20 +68,31 @@ public:
     /// \brief initialize the builder with a list of parsed classes
     /// \param declarations the list of parsed classes
     ///
-    TreeBuilder(const std::vector<uetli::parser::ClassDeclaration*>& declarations);
+    TreeBuilder(
+            const std::vector<uetli::parser::ClassDeclaration*>& declarations);
 
     ///
     /// \brief build the attributed tree
     ///
     void build(void);
 
+    ///
+    /// \brief get the attributed classes
+    /// \return the processed (attributed) class trees
+    ///
+    const std::vector<uetli::semantic::EffectiveClass*>&
+    getAttributedClasses(void) const;
+
 private:
 
-    void addFeatures(EffectiveClass* effClass, const uetli::parser::ClassDeclaration* declaration);
+    void addFeatures(EffectiveClass* effClass,
+                     const uetli::parser::ClassDeclaration* declaration);
 
-    void processMethod(Method* method, uetli::parser::MethodDeclaration* declaration);
+    void processMethod(Method* method,
+                       uetli::parser::MethodDeclaration* declaration);
 
-    void processStatement(EffectiveClass* ec, Scope* scope, uetli::parser::Statement*statement);
+    void processStatement(EffectiveClass* ec, Scope* scope,
+                          uetli::parser::Statement*statement);
 };
 
 

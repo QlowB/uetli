@@ -1,4 +1,4 @@
-// ============================================================================
+// =============================================================================
 //
 // This file is part of the uetli compiler.
 //
@@ -17,13 +17,20 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// ============================================================================
+// =============================================================================
 
 #include "HashMap.h"
 
+using uetli::util::DefaultHash;
+using uetli::util::NoEntryException;
 
-template<>
-size_t DefaultHash<std::string>::hash(const std::string& key)
+
+uetli::util::DefaultHash<std::string>::DefaultHash(void)
+{
+}
+
+
+size_t uetli::util::DefaultHash<std::string>::hash(const std::string& key)
 {
     const size_t prime1 = 14399107;
     const size_t prime2 = 10382231;
@@ -38,18 +45,18 @@ size_t DefaultHash<std::string>::hash(const std::string& key)
 }
 
 
-uetli::util::NoEntryException::NoEntryException(const std::string &message) :
+NoEntryException::NoEntryException(const std::string &message) :
     message(message)
 {
 }
 
 
-uetli::util::NoEntryException::~NoEntryException(void) throw()
+NoEntryException::~NoEntryException(void) throw()
 {
 }
 
 
-const char* uetli::util::NoEntryException::what(void) const throw()
+const char* NoEntryException::what(void) const throw()
 {
     return message.c_str();
 }

@@ -1,4 +1,4 @@
-// ============================================================================
+// =============================================================================
 //
 // This file is part of the uetli compiler.
 //
@@ -17,14 +17,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// ============================================================================
+// =============================================================================
 
 #ifndef UETLI_PARSER_PARSEOBJECT_H_
 #define UETLI_PARSER_PARSEOBJECT_H_
 
-
 #include <string>
 #include <vector>
+#include "../semantic/AttributedSyntaxTree.h"
 
 
 namespace uetli
@@ -74,12 +74,15 @@ struct uetli::parser::ClassDeclaration : virtual public ParseObject
     std::string name;
     std::vector<FeatureDeclaration*> features;
 
-    ClassDeclaration(const std::string& name, const std::vector<FeatureDeclaration*>& features);
+    ClassDeclaration(const std::string& name,
+                     const std::vector<FeatureDeclaration*>& features);
+
+    ~ClassDeclaration(void);
 
     ///
     /// \brief compares
-    /// \return <code>true</code>, if this object depends on the specified, i.e. it has a field
-    ///         of the specified type.
+    /// \return <code>true</code>, if this object depends on the specified, i.e.
+    ///         it has a field of the specified type.
     /// \warning at the moment not yet used
     ///
     bool dependsOn(const ClassDeclaration&) const;
@@ -91,12 +94,13 @@ struct uetli::parser::ClassDeclaration : virtual public ParseObject
 ///
 struct uetli::parser::FeatureDeclaration : virtual public ParseObject
 {
-    /// \brief the return type of this feature (either its return type, if it's a method
-    ///        or the variable type, if it's a field)
+    /// \brief the return type of this feature (either its return type, if it's
+    ///        a method or the variable type, if it's a field)
     std::string type;
     std::string name;
 protected:
     FeatureDeclaration(const std::string& type, const std::string& name);
+public:
     virtual ~FeatureDeclaration(void);
 };
 
@@ -117,12 +121,15 @@ struct uetli::parser::MethodDeclaration : virtual public FeatureDeclaration
 {
     std::vector<ArgumentDeclaration*> arguments;
     DoEndBlock* body;
-    MethodDeclaration(const std::string& type, const std::string& name, DoEndBlock* body);
+    MethodDeclaration(const std::string& type, const std::string& name,
+                      DoEndBlock* body);
+    ~MethodDeclaration(void);
 };
 
 
 struct uetli::parser::Statement : virtual public ParseObject
 {
+    virtual ~Statement(void);
 };
 
 
@@ -136,7 +143,9 @@ struct uetli::parser::NewVariableStatement : virtual public Statement
     Expression* initialValue;
 
     NewVariableStatement(const std::string& type, const std::string& name);
-    NewVariableStatement(const std::string& type, const std::string& name, Expression* initialValue);
+    NewVariableStatement(const std::string& type, const std::string& name,
+                         Expression* initialValue);
+    ~NewVariableStatement(void);
 };
 
 
@@ -165,28 +174,42 @@ struct uetli::parser::DoEndBlock : virtual public Statement
 
 struct uetli::parser::Expression : virtual public ParseObject
 {
+    virtual ~Expression(void);
+
+    virtual uetli::semantic::Expression* getAttributedExpression(
+            semantic::Scope* scope) const = 0;
 };
 
 
 ///
-/// \brief an expression representing a function call. This can be an full statement
-///        or an expression returning a value. It can also represent a variable identifier.
+/// \brief an expression representing a function call. This can be an full
+///        statement or an expression returning a value. It can also represent
+///        a variable identifier.
 ///
-struct uetli::parser::CallStatement : virtual public Statement, virtual public Expression
+struct uetli::parser::CallStatement :   virtual public Statement,
+                                        virtual public Expression
 {
     std::string methodName;
     std::vector<Expression*> arguments;
 
     CallStatement(const std::string& methodName);
-    CallStatement(const std::string& methodName, const std::vector<Expression*>& arguments);
+    CallStatement(const std::string& methodName,
+                  const std::vector<Expression*>& arguments);
+
+    virtual uetli::semantic::Expression* getAttributedExpression(
+            semantic::Scope* scope) const;
 };
 
 
-struct uetli::parser::OperationExpression : virtual public Statement, virtual public Expression
+struct uetli::parser::OperationExpression : virtual public Statement,
+                                            virtual public Expression
 {
     std::string operatorToken;
 
     OperationExpression(const std::string& operatorToken);
+
+    virtual uetli::semantic::Expression* getAttributedExpression(
+            semantic::Scope* scope) const = 0;
 };
 
 
@@ -195,7 +218,11 @@ struct uetli::parser::BinaryOperationExpression : public OperationExpression
     Expression* left;
     Expression* right;
 
-    BinaryOperationExpression(Expression* left, Expression* right, const std::string& operatorToken);
+    BinaryOperationExpression(Expression* left, Expression* right,
+                              const std::string& operatorToken);
+
+    virtual uetli::semantic::Expression* getAttributedExpression(
+            semantic::Scope* scope) const;
 };
 
 
@@ -209,9 +236,12 @@ struct uetli::parser::UnaryOperationExpression : public OperationExpression
     Expression* value;
     Fix fix;
 
-    UnaryOperationExpression(Expression* value, Fix fix, const std::string& operatorToken);
-};
+    UnaryOperationExpression(Expression* value, Fix fix,
+                             const std::string& operatorToken);
 
+    virtual uetli::semantic::Expression* getAttributedExpression(
+            semantic::Scope* scope) const;
+};
 
 
 struct uetli::parser::ArgumentDeclaration : virtual public Statement
@@ -224,4 +254,7 @@ struct uetli::parser::ArgumentDeclaration : virtual public Statement
 
 
 #endif // UETLI_PARSER_PARSEOBJECT_H_
+
+
+
 

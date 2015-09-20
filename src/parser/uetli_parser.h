@@ -22,6 +22,16 @@
 #ifndef UETLI_PARSER_UETLI_PARSER_H_
 #define UETLI_PARSER_UETLI_PARSER_H_
 
+#include <vector>
+#include <cstdio>
+
+namespace uetli
+{
+    namespace parser
+    {
+        struct ClassDeclaration;
+    }
+}
 
 ///
 /// \brief contains the parsed classes
@@ -40,7 +50,8 @@ extern FILE* uetli_parser_in;
 ///
 /// \brief the parse function
 ///
-/// This function invokes the actual parser.
+/// This function invokes the actual parser. The result will be stored in
+/// parsedClasses.
 ///
 extern void uetli_parser_parse(void);
 

@@ -1,6 +1,6 @@
 CXX := clang++
 CXXFLAGS := -O3
-LINKFLAGS := -Lparser/ -luetli_parser -Lsemantic -luetli_semantic -Lutil -luetli_util -Lcode -luetli_code -static
+LINKFLAGS := -Lparser/ -luetli_parser -Lsemantic -luetli_semantic -Lutil -luetli_util -Lcode -luetli_code
 
 OBJECTS := main.o
 LIBRARIES := parser/libuetli_parser.a semantic/libuetli_semantic.a util/libuetli_util.a code/libuetli_code.a

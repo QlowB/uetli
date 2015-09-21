@@ -35,6 +35,8 @@ namespace uetli
     namespace semantic
     {
         class TreeBuilder;
+
+        class Scope;
     }
 }
 
@@ -56,6 +58,9 @@ class uetli::semantic::TreeBuilder
     /// attributed class
     uetli::util::HashMap<std::string, EffectiveClass*> classesByName;
 
+    /// the main scope
+    Scope* globalScope;
+
     /// pair linking the freshly parsed MethodDeclaration and an attributed
     /// Method
     typedef std::pair<uetli::parser::MethodDeclaration*, Method*> MethodLink;
@@ -70,6 +75,8 @@ public:
     ///
     TreeBuilder(
             const std::vector<uetli::parser::ClassDeclaration*>& declarations);
+
+    ~TreeBuilder(void);
 
     ///
     /// \brief build the attributed tree

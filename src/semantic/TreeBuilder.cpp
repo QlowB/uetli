@@ -31,8 +31,14 @@ using namespace uetli::parser;
 
 
 TreeBuilder::TreeBuilder(const std::vector<ClassDeclaration*>& declarations) :
-    declarations(declarations)
+    declarations(declarations), globalScope(new Scope())
 {
+}
+
+
+TreeBuilder::~TreeBuilder(void)
+{
+    delete globalScope;
 }
 
 
@@ -40,9 +46,14 @@ void TreeBuilder::build(void)
 {
     typedef std::vector<ClassDeclaration*>::const_iterator CdIter;
     for (CdIter i = declarations.begin(); i != declarations.end(); i++) {
+
         EffectiveClass* ec = new EffectiveClass((*i)->name);
+
+        ec->getClassScope()->setParentScope(globalScope);
+
         attributedClasses.push_back(ec);
         classesByName.put((*i)->name, ec);
+        
     }
 
     typedef std::vector<EffectiveClass*>::iterator PcIter;
@@ -99,6 +110,7 @@ void TreeBuilder::addFeatures(EffectiveClass* effClass,
                 // *i is not a field, therefore it must be a method
                 Method* m = new Method(effClass, type, method->name,
                                        method->arguments.size());
+                m->getMethodScope()->setParentScope(effClass->getClassScope());
                 effClass->addMethod(m);
                 methodsToProcess.push(MethodLink(method, m));
             }
@@ -118,9 +130,9 @@ void TreeBuilder::processMethod(Method* method, MethodDeclaration* declaration)
 {
     StatementBlock& methodContent = method->getContent();
 
-
     for (size_t i = 0; i < declaration->body->statements.size(); i++) {
-        semantic::Statement* statement = 0;
+        semantic::Statement* statement = declaration->body->statements[i]->
+                getAttributedStatement(method->getMethodScope());
         //declaration->body->instructions[i];
     }
 }

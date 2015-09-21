@@ -130,6 +130,9 @@ struct uetli::parser::MethodDeclaration : virtual public FeatureDeclaration
 struct uetli::parser::Statement : virtual public ParseObject
 {
     virtual ~Statement(void);
+    
+    virtual semantic::Statement* getAttributedStatement(
+            semantic::Scope* scope) const = 0;
 };
 
 
@@ -145,7 +148,11 @@ struct uetli::parser::NewVariableStatement : virtual public Statement
     NewVariableStatement(const std::string& type, const std::string& name);
     NewVariableStatement(const std::string& type, const std::string& name,
                          Expression* initialValue);
+    
     ~NewVariableStatement(void);
+    
+    virtual semantic::Statement* getAttributedStatement(
+            semantic::Scope* scope) const;
 };
 
 
@@ -158,6 +165,9 @@ struct uetli::parser::AssignmentStatement : virtual public Statement
     Expression* rightSide;
 
     AssignmentStatement(Expression* leftSide, Expression* rightSide);
+
+    virtual semantic::Statement* getAttributedStatement(
+            semantic::Scope* scope) const;
 };
 
 
@@ -169,6 +179,9 @@ struct uetli::parser::DoEndBlock : virtual public Statement
     std::vector<Statement*> statements;
 
     DoEndBlock(const std::vector<Statement*>& statements);
+
+    virtual semantic::Statement* getAttributedStatement(
+            semantic::Scope* scope) const;
 };
 
 
@@ -198,11 +211,13 @@ struct uetli::parser::CallStatement :   virtual public Statement,
 
     virtual uetli::semantic::Expression* getAttributedExpression(
             semantic::Scope* scope) const;
+
+    virtual uetli::semantic::Statement* getAttributedStatement(
+            semantic::Scope* scope) const;
 };
 
 
-struct uetli::parser::OperationExpression : virtual public Statement,
-                                            virtual public Expression
+struct uetli::parser::OperationExpression : virtual public Expression
 {
     std::string operatorToken;
 
@@ -244,7 +259,7 @@ struct uetli::parser::UnaryOperationExpression : public OperationExpression
 };
 
 
-struct uetli::parser::ArgumentDeclaration : virtual public Statement
+struct uetli::parser::ArgumentDeclaration
 {
     std::string type;
     std::string name;

@@ -24,8 +24,11 @@
 
 #include <string>
 #include <vector>
+
 #include "../util/HashMap.h"
 #include "../code/StackMachine.h"
+
+#include "Scope.h"
 
 namespace uetli
 {
@@ -85,8 +88,12 @@ class uetli::semantic::EffectiveClass : public Class
     uetli::util::HashMap<std::string, Field*> fieldLinks;
     uetli::util::HashMap<std::string, Method*> methodLinks;
 
+    Scope classScope;
+
 public:
     EffectiveClass(const std::string& name);
+
+    Scope* getClassScope(void);
 
     void addField(Field* field);
     void addMethod(Method* method);
@@ -99,20 +106,6 @@ public:
 
     Field* getField(const std::string& name);
     Method* getMethod(const std::string& name);
-};
-
-
-class uetli::semantic::Scope
-{
-    Scope* parentScope;
-
-    uetli::util::HashMap<std::string, Method*> methodLinks;
-public:
-    Scope(void);
-
-    void setParentScope(Scope* parentScope);
-
-    Method* findMethod(const std::string& name);
 };
 
 
@@ -147,6 +140,9 @@ class uetli::semantic::StatementBlock : public Statement
     std::vector<Statement*> statements;
     size_t localVariableCount;
 
+    /// variable scope
+    Scope localScope;
+
     /// contains the local variables in the order they were defined.
     std::vector<Variable*> localVariables;
 
@@ -160,6 +156,7 @@ public:
     void addStatement(Statement* toSet);
 
     size_t getLocalVariableCount(void) const;
+    Scope* getLocalScope(void);
 
     virtual void generateStatementCode(
             std::vector<code::StackInstruction*>& code) const;
@@ -219,7 +216,7 @@ public:
     NewVariableStatement(Class* type, const std::string& name, Scope* scope);
     Variable* getVariable(void);
 
-    virtual void generateExpressionCode(
+    virtual void generateStatementCode(
             std::vector<code::StackInstruction*>& code) const;
 };
 

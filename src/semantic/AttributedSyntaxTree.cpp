@@ -20,6 +20,9 @@
 // =============================================================================
 
 #include "AttributedSyntaxTree.h"
+#include "Scope.h"
+
+#include <iostream>
 
 using namespace uetli::semantic;
 
@@ -45,6 +48,12 @@ ClassReference::ClassReference(const std::string& name) :
 EffectiveClass::EffectiveClass(const std::string& name) :
     Class(name)
 {
+}
+
+
+Scope* EffectiveClass::getClassScope(void)
+{
+    return &classScope;
 }
 
 
@@ -98,32 +107,6 @@ Method* EffectiveClass::getMethod(const std::string& name)
 }
 
 
-Scope::Scope(void) :
-    parentScope(0)
-{
-}
-
-
-void Scope::setParentScope(Scope* parentScope)
-{
-    this->parentScope = parentScope;
-}
-
-
-Method* Scope::findMethod(const std::string& name)
-{
-    Method** m = methodLinks.getReference(name);
-    if (m != 0)
-        return *m;
-    else if (parentScope != 0) {
-        return parentScope->findMethod(name);
-    }
-    else {
-        return 0;
-    }
-}
-
-
 Variable::Variable(Class* type, const std::string& name, Scope* scope) :
     type(type), name(name), scope(scope)
 {
@@ -174,10 +157,18 @@ size_t StatementBlock::getLocalVariableCount(void) const
 }
 
 
+Scope* StatementBlock::getLocalScope(void)
+{
+    return &localScope;
+}
+
+
 void StatementBlock::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
     typedef std::vector<Statement*>::const_iterator StatIterator;
+    std::cout << "transforming: " << statements.size() << " instructions" <<
+                 std::endl;
     for (StatIterator i = statements.begin(); i != statements.end(); i++) {
         (*i)->generateStatementCode(code);
     }
@@ -250,7 +241,7 @@ Variable* NewVariableStatement::getVariable(void)
 }
 
 
-void NewVariableStatement::generateExpressionCode(
+void NewVariableStatement::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
 }
@@ -280,6 +271,7 @@ CallStatement::CallStatement(Method* method,
 void CallStatement::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
+    
     throw std::string("not yet implemented in file ") + __FILE__;
 }
 

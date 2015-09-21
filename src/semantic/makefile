@@ -3,7 +3,7 @@ CXXFLAGS := -O3 -fPIC
 
 AR := ar
 
-OBJECTS := AttributedSyntaxTree.o TreeBuilder.o
+OBJECTS := AttributedSyntaxTree.o TreeBuilder.o Scope.o
 LIBRARY := libuetli_semantic.a
 
 

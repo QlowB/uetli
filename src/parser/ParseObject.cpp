@@ -22,6 +22,7 @@
 #include "ParseObject.h"
 
 using namespace uetli::parser;
+using namespace uetli;
 
 
 ClassDeclaration::ClassDeclaration(
@@ -115,6 +116,14 @@ NewVariableStatement::~NewVariableStatement(void)
 }
 
 
+uetli::semantic::Statement* NewVariableStatement::getAttributedStatement(
+        semantic::Scope* scope) const
+{
+    return new semantic::NewVariableStatement(scope->findClass(type),
+                                          name, scope);
+}
+
+
 AssignmentStatement::AssignmentStatement(Expression* leftSide,
                                          Expression* rightSide) :
 	leftSide(leftSide), rightSide(rightSide)
@@ -122,9 +131,34 @@ AssignmentStatement::AssignmentStatement(Expression* leftSide,
 }
 
 
+semantic::Statement* AssignmentStatement::getAttributedStatement(
+        semantic::Scope* scope) const
+{
+    return 0;
+}
+
+
 DoEndBlock::DoEndBlock(const std::vector<Statement *>& instructions):
     statements(instructions)
 {
+}
+
+
+semantic::Statement* DoEndBlock::getAttributedStatement(
+        semantic::Scope* scope) const
+{
+    semantic::StatementBlock* block = new semantic::StatementBlock();
+
+    block->getLocalScope()->setParentScope(scope);
+
+    typedef std::vector<Statement*>::const_iterator StatIterator;
+    for (StatIterator i = statements.begin(); i != statements.end(); i++) {
+        block->addStatement(
+                (*i)->getAttributedStatement(block->getLocalScope())
+        );
+    }
+
+    return block;
 }
 
 
@@ -147,7 +181,7 @@ CallStatement::CallStatement(const std::string& methodName,
 
 
 uetli::semantic::Expression* CallStatement::getAttributedExpression(
-semantic::Scope* scope) const
+                                                                    semantic::Scope* scope) const
 {
     semantic::Method* toCall = scope->findMethod(methodName);
     std::vector<semantic::Expression*> arguments;
@@ -158,8 +192,15 @@ semantic::Scope* scope) const
     for (unsigned int i = 0; i < toCall->getArgumentCount(); i++) {
         arguments.push_back(this->arguments[i]->getAttributedExpression(scope));
     }
-
+    
     return new semantic::CallStatement(toCall, arguments);
+}
+
+
+uetli::semantic::Statement* CallStatement::getAttributedStatement(
+        semantic::Scope* scope) const
+{
+    return dynamic_cast<semantic::Statement*> (getAttributedExpression(scope));
 }
 
 

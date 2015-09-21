@@ -31,4 +31,8 @@ code/libuetli_code.a:
 util/libuetli_util.a:
 	cd util && $(MAKE)
 
+.PHONY: clear
+clear:
+	rm *.o *.a parser/*.o parser/*.a semantic/*.o semantic/*.a code/*.o code/*.a util/*.o uetli/*.a
+
 

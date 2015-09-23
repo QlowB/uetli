@@ -167,12 +167,15 @@ void StatementBlock::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
     typedef std::vector<Statement*>::const_iterator StatIterator;
-    std::cout << "transforming: " << statements.size() << " instructions" <<
+    std::cout << "transforming: " << statements.size() << " instructions..." <<
                  std::endl;
     for (StatIterator i = statements.begin(); i != statements.end(); i++) {
+        std::cout << "transforming a instruction: " << (*i) << std::endl;
         (*i)->generateStatementCode(code);
+        std::cout << "transformed an instruction." << std::endl;
     }
-    code.push_back(new uetli::code::PopInstruction());
+    std::cout << "transformed " << statements.size() << " instructions." <<
+    std::endl;
 }
 
 
@@ -257,7 +260,7 @@ AssignmentStatement::AssignmentStatement(Variable* lvalue, Expression* rvalue) :
 void AssignmentStatement::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
-    throw std::string("not yet implemented in file ") + __FILE__;
+    std::cerr << std::string("not yet implemented in file ") + __FILE__;
 }
 
 

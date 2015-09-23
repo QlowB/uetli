@@ -36,6 +36,7 @@ namespace uetli
 
         class Method;
         class Class;
+        class Variable;
     }
 }
 
@@ -49,6 +50,7 @@ class uetli::semantic::Scope
 
     std::vector<Scope*> childrenScopes;
 
+    uetli::util::HashMap<std::string, Variable*> variableLinks;
     uetli::util::HashMap<std::string, Method*> methodLinks;
     uetli::util::HashMap<std::string, Class*> classLinks;
 public:
@@ -63,6 +65,7 @@ public:
 
     Method* findMethod(const std::string& name);
     Class* findClass(const std::string& name);
+    Class* findVariable(const std::string& name);
 };
 
 

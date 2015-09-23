@@ -83,3 +83,17 @@ Class* Scope::findClass(const std::string& name)
     }
 }
 
+
+Class* Scope::findVariable(const std::string& name)
+{
+    Variable** v = variableLinks.getReference(name);
+    if (v != 0)
+        return *v;
+    else if (parentScope != 0) {
+        return parentScope->findVariable(name);
+    }
+    else {
+        return 0;
+    }
+}
+

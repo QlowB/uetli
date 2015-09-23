@@ -134,7 +134,10 @@ AssignmentStatement::AssignmentStatement(Expression* leftSide,
 semantic::Statement* AssignmentStatement::getAttributedStatement(
         semantic::Scope* scope) const
 {
-    return 0;
+    return new semantic::AssignmentStatement(
+        leftSide->getAttributedExpression(scope),
+        rightSide->getAttributedExpression(scope)
+    );
 }
 
 
@@ -181,7 +184,7 @@ CallStatement::CallStatement(const std::string& methodName,
 
 
 uetli::semantic::Expression* CallStatement::getAttributedExpression(
-                                                                    semantic::Scope* scope) const
+        semantic::Scope* scope) const
 {
     semantic::Method* toCall = scope->findMethod(methodName);
     std::vector<semantic::Expression*> arguments;
@@ -201,6 +204,21 @@ uetli::semantic::Statement* CallStatement::getAttributedStatement(
         semantic::Scope* scope) const
 {
     return dynamic_cast<semantic::Statement*> (getAttributedExpression(scope));
+}
+
+
+VariableExpression::VariableExpression(const std::string& variableName) :
+methodName(methodName)
+{
+}
+
+
+uetli::semantic::Expression* VariableExpression::getAttributedExpression(
+        semantic::Scope* scope) const
+{
+    return new semantic::VariableExpression(
+        scope->findVariable(variableName)
+    );
 }
 
 

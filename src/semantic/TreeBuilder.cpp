@@ -133,20 +133,15 @@ void TreeBuilder::processMethod(Method* method, MethodDeclaration* declaration)
     for (size_t i = 0; i < declaration->body->statements.size(); i++) {
         semantic::Statement* statement = declaration->body->statements[i]->
                 getAttributedStatement(method->getMethodScope());
-        //declaration->body->instructions[i];
+        methodContent.addStatement(statement);
     }
 }
 
 
+/// \deprecated
 void TreeBuilder::processStatement(EffectiveClass* ec, Scope* scope,
                                    parser::Statement* statement)
 {
-    parser::CallStatement* cs =
-            dynamic_cast<parser::CallStatement*> (statement);
-
-    if (cs != 0) {
-
-    }
 }
 
 

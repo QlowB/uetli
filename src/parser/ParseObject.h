@@ -44,7 +44,7 @@ namespace uetli
                 struct DoEndBlock;
 
             struct Expression;
-                struct CallStatement;
+                struct CallOrVariableStatement;
                 struct OperationExpression;
                 struct BinaryOperationExpression;
                 struct UnaryOperationExpression;
@@ -162,10 +162,11 @@ struct uetli::parser::NewVariableStatement : virtual public Statement
 struct uetli::parser::AssignmentStatement : virtual public Statement
 {
     /// left side is a variable statement
-    CallStatement* leftSide;
+    CallOrVariableStatement* leftSide;
     Expression* rightSide;
 
-    AssignmentStatement(CallStatement* leftSide, Expression* rightSide);
+    AssignmentStatement(CallOrVariableStatement* leftSide,
+                        Expression* rightSide);
 
     virtual semantic::Statement* getAttributedStatement(
             semantic::Scope* scope) const;
@@ -200,14 +201,14 @@ struct uetli::parser::Expression : virtual public ParseObject
 ///        statement or an expression returning a value. It can also represent
 ///        a variable identifier.
 ///
-struct uetli::parser::CallStatement : virtual public Statement,
+struct uetli::parser::CallOrVariableStatement : virtual public Statement,
 virtual public Expression
 {
     std::string methodName;
     std::vector<Expression*> arguments;
 
-    CallStatement(const std::string& methodName);
-    CallStatement(const std::string& methodName,
+    CallOrVariableStatement(const std::string& methodName);
+    CallOrVariableStatement(const std::string& methodName,
                   const std::vector<Expression*>& arguments);
 
     virtual uetli::semantic::Expression* getAttributedExpression(

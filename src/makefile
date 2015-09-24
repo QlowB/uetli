@@ -33,6 +33,6 @@ util/libuetli_util.a:
 
 .PHONY: clear
 clear:
-	rm *.o *.a parser/*.o parser/*.a semantic/*.o semantic/*.a code/*.o code/*.a util/*.o uetli/*.a
+	rm -f *.o *.a parser/*.o parser/*.a semantic/*.o semantic/*.a code/*.o code/*.a util/*.o uetli/*.a
 
 

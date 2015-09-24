@@ -65,7 +65,7 @@ std::vector<uetli::parser::ClassDeclaration*>* parsedClasses = 0;
 
     uetli::parser::Statement* statement;
     uetli::parser::AssignmentStatement* assignmentStatement;
-    uetli::parser::CallStatement* callStatement;
+    uetli::parser::CallOrVariableStatement* callOrVariableStatement;
     uetli::parser::DoEndBlock* doEndBlock;
 
     uetli::parser::Expression* expression;
@@ -102,7 +102,7 @@ std::vector<uetli::parser::ClassDeclaration*>* parsedClasses = 0;
 
 %type <statement> statement
 %type <assignmentStatement> assignmentStatement
-%type <callStatement> callStatement
+%type <callOrVariableStatement> callOrVariableStatement
 %type <doEndBlock> doEndBlock
 
 %type <expression> expression paranthesesExpression
@@ -249,7 +249,7 @@ statements:
 
 
 statement:
-    callStatement {
+    callOrVariableStatement {
         $$ = $1;
     }
     |
@@ -258,14 +258,14 @@ statement:
     };
 
 
-callStatement:
+callOrVariableStatement:
     IDENTIFIER {
-        $$ = new CallStatement(*$1);
+        $$ = new CallOrVariableStatement(*$1);
         delete $1; $1 = 0;
     }
     |
     IDENTIFIER ROUND_LEFT expressionList ROUND_RIGHT {
-        $$ = new CallStatement(*$1, *$3);
+        $$ = new CallOrVariableStatement(*$1, *$3);
         delete $1; delete $3; $1 = 0; $3 = 0;
     };
 
@@ -284,7 +284,7 @@ expressionList:
 
 
 expression:
-    callStatement {
+    callOrVariableStatement {
         $$ = $1;
     }
     |
@@ -342,7 +342,7 @@ paranthesesExpression:
 
 
 assignmentStatement:
-	callStatement ASSIGN expression {
+        callOrVariableStatement ASSIGN expression {
 		$$ = new AssignmentStatement($1, $3);
 	};
 

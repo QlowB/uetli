@@ -124,7 +124,7 @@ uetli::semantic::Statement* NewVariableStatement::getAttributedStatement(
 }
 
 
-AssignmentStatement::AssignmentStatement(CallStatement* leftSide,
+AssignmentStatement::AssignmentStatement(CallOrVariableStatement* leftSide,
                                          Expression* rightSide) :
 	leftSide(leftSide), rightSide(rightSide)
 {
@@ -135,10 +135,12 @@ semantic::Statement* AssignmentStatement::getAttributedStatement(
         semantic::Scope* scope) const
 {
     semantic::Expression* left = leftSide->getAttributedExpression(scope);
-    
+    semantic::Variable* lvalue = dynamic_cast<semantic::Variable*>(left);
+    if (lvalue == 0)
+        throw "lvalue must be variable";
 
     return new semantic::AssignmentStatement(
-        leftSide->getAttributedVariableExpression(scope),
+        lvalue,
         rightSide->getAttributedExpression(scope)
     );
 }
@@ -173,37 +175,48 @@ Expression::~Expression(void)
 }
 
 
-CallStatement::CallStatement(const std::string& methodName) :
+CallOrVariableStatement::CallOrVariableStatement(const std::string& methodName) :
     methodName(methodName)
 {
 }
 
 
-CallStatement::CallStatement(const std::string& methodName,
+CallOrVariableStatement::CallOrVariableStatement(const std::string& methodName,
                              const std::vector<Expression*>& arguments) :
     methodName(methodName), arguments(arguments)
 {
 }
 
 
-uetli::semantic::Expression* CallStatement::getAttributedExpression(
+uetli::semantic::Expression* CallOrVariableStatement::getAttributedExpression(
         semantic::Scope* scope) const
 {
     semantic::Method* toCall = scope->findMethod(methodName);
-    std::vector<semantic::Expression*> arguments;
 
-    if (this->arguments.size() != toCall->getArgumentCount())
-        throw "severe internal error!";
+    if (toCall != 0) {
+        std::vector<semantic::Expression*> arguments;
 
-    for (unsigned int i = 0; i < toCall->getArgumentCount(); i++) {
-        arguments.push_back(this->arguments[i]->getAttributedExpression(scope));
+        if (this->arguments.size() != toCall->getArgumentCount())
+            throw "severe internal error!";
+
+        for (unsigned int i = 0; i < toCall->getArgumentCount(); i++) {
+            arguments.push_back(
+                        this->arguments[i]->getAttributedExpression(scope));
+        }
+
+        return new semantic::CallStatement(toCall, arguments);
     }
-    
-    return new semantic::CallStatement(toCall, arguments);
+
+    semantic::Variable* toExpress = scope->findVariable(methodName);
+    if (toExpress != 0 && arguments.empty()) {
+        return toExpress;
+    }
+    else
+        throw "severe internal error!";
 }
 
 
-uetli::semantic::Statement* CallStatement::getAttributedStatement(
+uetli::semantic::Statement* CallOrVariableStatement::getAttributedStatement(
         semantic::Scope* scope) const
 {
     return dynamic_cast<semantic::Statement*> (getAttributedExpression(scope));

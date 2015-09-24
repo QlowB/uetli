@@ -65,7 +65,7 @@ public:
 
     Method* findMethod(const std::string& name);
     Class* findClass(const std::string& name);
-    Class* findVariable(const std::string& name);
+    Variable* findVariable(const std::string& name);
 };
 
 

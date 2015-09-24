@@ -107,12 +107,6 @@ Method* EffectiveClass::getMethod(const std::string& name)
 }
 
 
-Variable::Variable(Class* type, const std::string& name, Scope* scope) :
-    type(type), name(name), scope(scope)
-{
-}
-
-
 Statement::Statement(void)
 {
 }
@@ -233,14 +227,21 @@ void UnaryOperationExpression::generateExpressionCode(
 
 NewVariableStatement::NewVariableStatement(Class* type, const std::string& name,
                                            Scope* scope) :
-    newVariable(type, name, scope)
+    newVariable(new Variable(type, name, scope))
 {
+}
+
+
+NewVariableStatement::~NewVariableStatement(void)
+{
+    delete newVariable;
+    newVariable = 0;
 }
 
 
 Variable* NewVariableStatement::getVariable(void)
 {
-    return &newVariable;
+    return newVariable;
 }
 
 
@@ -283,6 +284,19 @@ void CallStatement::generateExpressionCode(
         std::vector<code::StackInstruction*>& code) const
 {
     generateStatementCode(code);
+}
+
+
+Variable::Variable(Class* type, const std::string& name, Scope* scope) :
+    type(type), name(name), scope(scope)
+{
+}
+
+
+void Variable::generateExpressionCode(
+        std::vector<code::StackInstruction*>& code) const
+{
+    code.push_back(new code::LoadInstruction(0 /* TODO calc value */ ));
 }
 
 

@@ -39,7 +39,6 @@ namespace uetli
             class EffectiveClass;
 
         class Scope;
-        class Variable;
 
         class Statement;
             class StatementBlock;
@@ -50,6 +49,8 @@ namespace uetli
             class OperationExpression;
             class BinaryOperationExpression;
             class UnaryOperationExpression;
+
+            class Variable;
 
         class Feature;
             class Field;
@@ -106,16 +107,6 @@ public:
 
     Field* getField(const std::string& name);
     Method* getMethod(const std::string& name);
-};
-
-
-class uetli::semantic::Variable
-{
-    Class* type;
-    std::string name;
-    Scope* scope;
-public:
-    Variable(Class* type, const std::string& name, Scope* scope);
 };
 
 
@@ -211,9 +202,10 @@ public:
 
 class uetli::semantic::NewVariableStatement : public Statement
 {
-    Variable newVariable;
+    Variable* newVariable;
 public:
     NewVariableStatement(Class* type, const std::string& name, Scope* scope);
+    ~NewVariableStatement(void);
     Variable* getVariable(void);
 
     virtual void generateStatementCode(
@@ -248,6 +240,19 @@ public:
 
     virtual void generateStatementCode(
             std::vector<code::StackInstruction*>& code) const;
+
+    virtual void generateExpressionCode(
+            std::vector<code::StackInstruction*>& code) const;
+};
+
+
+class uetli::semantic::Variable : public Expression
+{
+    Class* type;
+    std::string name;
+    Scope* scope;
+public:
+    Variable(Class* type, const std::string& name, Scope* scope);
 
     virtual void generateExpressionCode(
             std::vector<code::StackInstruction*>& code) const;

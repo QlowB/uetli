@@ -45,7 +45,6 @@ namespace uetli
 
             struct Expression;
                 struct CallStatement;
-                struct VariableExpression;
                 struct OperationExpression;
                 struct BinaryOperationExpression;
                 struct UnaryOperationExpression;
@@ -162,10 +161,11 @@ struct uetli::parser::NewVariableStatement : virtual public Statement
 ///
 struct uetli::parser::AssignmentStatement : virtual public Statement
 {
-    Variable* leftSide;
+    /// left side is a variable statement
+    CallStatement* leftSide;
     Expression* rightSide;
 
-    AssignmentStatement(Expression* leftSide, Expression* rightSide);
+    AssignmentStatement(CallStatement* leftSide, Expression* rightSide);
 
     virtual semantic::Statement* getAttributedStatement(
             semantic::Scope* scope) const;
@@ -214,17 +214,6 @@ virtual public Expression
             semantic::Scope* scope) const;
 
     virtual uetli::semantic::Statement* getAttributedStatement(
-            semantic::Scope* scope) const;
-};
-
-
-struct uetli::parser::VariableExpression : virtual public Expression
-{
-    std::string variableName;
-
-    VariableExpression(const std::string& variableName);
-
-    virtual uetli::semantic::Expression* getAttributedExpression(
             semantic::Scope* scope) const;
 };
 

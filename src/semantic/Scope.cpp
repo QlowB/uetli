@@ -84,7 +84,7 @@ Class* Scope::findClass(const std::string& name)
 }
 
 
-Class* Scope::findVariable(const std::string& name)
+Variable* Scope::findVariable(const std::string& name)
 {
     Variable** v = variableLinks.getReference(name);
     if (v != 0)

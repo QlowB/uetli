@@ -342,7 +342,7 @@ paranthesesExpression:
 
 
 assignmentStatement:
-	expression ASSIGN expression {
+	callStatement ASSIGN expression {
 		$$ = new AssignmentStatement($1, $3);
 	};
 

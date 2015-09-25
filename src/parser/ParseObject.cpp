@@ -197,7 +197,7 @@ uetli::semantic::Expression* CallOrVariableStatement::getAttributedExpression(
         std::vector<semantic::Expression*> arguments;
 
         if (this->arguments.size() != toCall->getArgumentCount())
-            throw "severe internal error!";
+            throw "severe internal error: method has wrong argument count.";
 
         for (unsigned int i = 0; i < toCall->getArgumentCount(); i++) {
             arguments.push_back(
@@ -212,7 +212,7 @@ uetli::semantic::Expression* CallOrVariableStatement::getAttributedExpression(
         return toExpress;
     }
     else
-        throw "severe internal error!";
+        throw "severe internal error: feature is neither method nor field.";
 }
 
 

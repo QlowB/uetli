@@ -38,7 +38,7 @@ TreeBuilder::TreeBuilder(const std::vector<ClassDeclaration*>& declarations) :
 
 TreeBuilder::~TreeBuilder(void)
 {
-    delete globalScope;
+    //delete globalScope;
 }
 
 

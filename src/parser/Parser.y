@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <cstdio>
 #include "ParseObject.h"
 using namespace uetli::parser;
 

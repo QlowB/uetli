@@ -61,8 +61,9 @@ class uetli::UetliConsoleInterface : public ConsoleInterface
 {
     std::string outputFilename;
     std::vector<std::string> inputFiles;
+    std::vector<FILE*> openedFiles;
 
-    struct ConsoleArgument
+    struct Setting
     {
         enum Type
         {
@@ -72,10 +73,11 @@ class uetli::UetliConsoleInterface : public ConsoleInterface
         std::string argument;
     };
 
-    std::vector<ConsoleArgument> arguments;
+    std::vector<Setting> settings;
 
 public:
     UetliConsoleInterface(int argc, char** argv);
+    ~UetliConsoleInterface(void);
 
     virtual int run(void);
 };

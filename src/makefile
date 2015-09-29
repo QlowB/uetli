@@ -2,7 +2,7 @@ CXX := clang++
 CXXFLAGS := -O3 -g
 LINKFLAGS := -Lparser/ -luetli_parser -Lsemantic -luetli_semantic -Lutil -luetli_util -Lcode -luetli_code
 
-OBJECTS := main.o
+OBJECTS := main.o Interface.o
 LIBRARIES := parser/libuetli_parser.a semantic/libuetli_semantic.a util/libuetli_util.a code/libuetli_code.a
 EXECUTABLE := uetli
 

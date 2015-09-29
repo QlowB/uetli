@@ -40,7 +40,14 @@ namespace uetli
 ///
 extern std::vector<uetli::parser::ClassDeclaration*>* parsedClasses;
 
+////
+/// \brief error output stream for the parser
 ///
+/// This stream is used as the error output by the parser.
+///
+extern FILE* uetli_parser_error_out;
+
+//
 /// \brief input stream for the parser
 ///
 /// This stream is used as the code input by the parser.

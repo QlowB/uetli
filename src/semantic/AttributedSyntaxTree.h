@@ -254,6 +254,8 @@ class uetli::semantic::Variable : public Expression
 public:
     Variable(Class* type, const std::string& name, Scope* scope);
 
+    const std::string& getName(void) const;
+
     virtual void generateExpressionCode(
             std::vector<code::StackInstruction*>& code) const;
 };

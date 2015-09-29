@@ -19,6 +19,7 @@
 //
 // =============================================================================
 
+
 #include "AttributedSyntaxTree.h"
 #include "Scope.h"
 
@@ -157,6 +158,7 @@ Scope* StatementBlock::getLocalScope(void)
 }
 
 
+#include <typeinfo>
 void StatementBlock::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
@@ -164,7 +166,8 @@ void StatementBlock::generateStatementCode(
     std::cout << "transforming: " << statements.size() << " instructions..." <<
                  std::endl;
     for (StatIterator i = statements.begin(); i != statements.end(); i++) {
-        std::cout << "transforming a instruction: " << (*i) << std::endl;
+        std::cout << "transforming an instruction: " << typeid(*i).name() <<
+            std::endl;
         (*i)->generateStatementCode(code);
         std::cout << "transformed an instruction." << std::endl;
     }
@@ -261,7 +264,8 @@ AssignmentStatement::AssignmentStatement(Variable* lvalue, Expression* rvalue) :
 void AssignmentStatement::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
-    std::cerr << std::string("not yet implemented in file ") + __FILE__;
+    std::cerr << "not yet implemented in file " << __FILE__ <<
+        std::endl;
 }
 
 
@@ -276,7 +280,7 @@ void CallStatement::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
     
-    throw std::string("not yet implemented in file ") + __FILE__;
+    std::cerr << "not yet implemented in file " << __FILE__ << std::endl;
 }
 
 
@@ -290,6 +294,12 @@ void CallStatement::generateExpressionCode(
 Variable::Variable(Class* type, const std::string& name, Scope* scope) :
     type(type), name(name), scope(scope)
 {
+}
+
+
+const std::string& Variable::getName(void) const
+{
+    return name;
 }
 
 

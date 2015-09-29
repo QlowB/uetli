@@ -119,8 +119,10 @@ NewVariableStatement::~NewVariableStatement(void)
 uetli::semantic::Statement* NewVariableStatement::getAttributedStatement(
         semantic::Scope* scope) const
 {
-    return new semantic::NewVariableStatement(scope->findClass(type),
-                                          name, scope);
+    semantic::NewVariableStatement* nvs =
+        new semantic::NewVariableStatement(scope->findClass(type),  name, scope);
+    scope->addVariable(nvs->getVariable());
+    return nvs;
 }
 
 
@@ -208,7 +210,7 @@ uetli::semantic::Expression* CallOrVariableStatement::getAttributedExpression(
     }
 
     semantic::Variable* toExpress = scope->findVariable(methodName);
-    if (toExpress != 0 && arguments.empty()) {
+    if (toExpress != 0/* && arguments.empty() */) {
         return toExpress;
     }
     else

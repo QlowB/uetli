@@ -1,4 +1,4 @@
-// =============================================================================
+/* =============================================================================
 //
 // This file is part of the uetli compiler.
 //
@@ -17,7 +17,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// =============================================================================
+// ===========================================================================*/
+
 
 %{
 
@@ -28,9 +29,10 @@
 using namespace uetli::parser;
 
 extern int uetli_parser_lex();
+FILE* uetli_parser_error_out = stderr;
 extern int uetli_parser_error(const char*)
 {
-    std::cerr << "Parser Error!\n";
+    fprintf(::uetli_parser_error_out, "Parser Error!\n");
     return 0;
 }
 
@@ -39,15 +41,16 @@ std::vector<uetli::parser::ClassDeclaration*>* parsedClasses = 0;
 
 %}
 
-
-//%skeleton "lalr1.cc" // generate C++ parser
 %define api.prefix {uetli_parser_}
+
+/*
+//%skeleton "lalr1.cc" // generate C++ parser
 //%define api.namespace {uetli::parser}
 //%define api.value.type {struct semantic_type}
 //%define parser_class_name {Parser}
 
 //%name-prefix "uetli_parser_"
-
+*/
 %union {
     std::vector<uetli::parser::ClassDeclaration*>* classes;
     std::vector<uetli::parser::Statement*>* statements;
@@ -64,6 +67,7 @@ std::vector<uetli::parser::ClassDeclaration*>* parsedClasses = 0;
 
 
     uetli::parser::Statement* statement;
+    uetli::parser::NewVariableStatement* newVariableStatement;
     uetli::parser::AssignmentStatement* assignmentStatement;
     uetli::parser::CallOrVariableStatement* callOrVariableStatement;
     uetli::parser::DoEndBlock* doEndBlock;
@@ -101,6 +105,7 @@ std::vector<uetli::parser::ClassDeclaration*>* parsedClasses = 0;
 %type <methodDeclaration> methodDeclaration
 
 %type <statement> statement
+%type <newVariableStatement> newVariableStatement
 %type <assignmentStatement> assignmentStatement
 %type <callOrVariableStatement> callOrVariableStatement
 %type <doEndBlock> doEndBlock
@@ -255,6 +260,10 @@ statement:
     |
     assignmentStatement {
         $$ = $1;
+    }
+    |
+    newVariableStatement {
+        $$ = $1;
     };
 
 
@@ -336,15 +345,22 @@ operator:
 
 
 paranthesesExpression:
-	ROUND_LEFT expression ROUND_RIGHT {
-		$$ = $2;
-	};
+    ROUND_LEFT expression ROUND_RIGHT {
+        $$ = $2;
+    };
 
 
 assignmentStatement:
-        callOrVariableStatement ASSIGN expression {
-		$$ = new AssignmentStatement($1, $3);
-	};
+    callOrVariableStatement ASSIGN expression {
+        $$ = new AssignmentStatement($1, $3);
+    };
+
+
+newVariableStatement:
+    IDENTIFIER COLON IDENTIFIER {
+        $$ = new NewVariableStatement(*$3, *$1);
+        delete $3; delete $1; $3 = 0; $1 = 0;
+    };
 
 
 

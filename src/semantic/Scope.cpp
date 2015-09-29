@@ -97,3 +97,10 @@ Variable* Scope::findVariable(const std::string& name)
     }
 }
 
+
+void Scope::addVariable(Variable* variable)
+{
+    variableLinks.put(variable->getName(), variable);
+}
+
+

@@ -20,56 +20,66 @@
 // =============================================================================
 
 
-#ifndef UETLI_SEMANTIC_SCOPE_H_
-#define UETLI_SEMANTIC_SCOPE_H_
+#ifndef UETLI_INTERFACE_H_
+#define UETLI_INTERFACE_H_
 
-#include "../util/HashMap.h"
-
+#include <cstdio>
 #include <string>
+#include <vector>
 
 
 namespace uetli
 {
-    namespace semantic
-    {
-        class Scope;
-
-        class Method;
-        class Class;
-        class Variable;
-    }
+    class ConsoleInterface;
+    
+    class UetliConsoleInterface;
 }
 
 
-///
-/// \brief variable and class scope
-///
-class uetli::semantic::Scope
+
+class uetli::ConsoleInterface
 {
-    Scope* parentScope;
-
-    std::vector<Scope*> childrenScopes;
-
-    uetli::util::HashMap<std::string, Variable*> variableLinks;
-    uetli::util::HashMap<std::string, Method*> methodLinks;
-    uetli::util::HashMap<std::string, Class*> classLinks;
-public:
-    Scope(void);
-    ~Scope(void);
-
-    void setParentScope(Scope* parentScope);
-
 protected:
-    void addChildScope(Scope* childScope);
+    FILE* in;
+    FILE* out;
+    FILE* error;
+
+
+    std::vector<std::string> arguments;
+
 public:
 
-    Method* findMethod(const std::string& name);
-    Class* findClass(const std::string& name);
-    Variable* findVariable(const std::string& name);
+    ConsoleInterface(int argc, char** argv);
+    ~ConsoleInterface(void);
 
-    void addVariable(Variable* variable);
+    virtual int run(void) = 0;
+
 };
 
 
-#endif // UETLI_SEMANTIC_SCOPE_H_
+class uetli::UetliConsoleInterface : public ConsoleInterface
+{
+    std::string outputFilename;
+    std::vector<std::string> inputFiles;
+
+    struct ConsoleArgument
+    {
+        enum Type
+        {
+        };
+
+        Type type;
+        std::string argument;
+    };
+
+    std::vector<ConsoleArgument> arguments;
+
+public:
+    UetliConsoleInterface(int argc, char** argv);
+
+    virtual int run(void);
+};
+
+
+#endif // UETLI_INTERFACE_H_
 

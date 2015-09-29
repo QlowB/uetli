@@ -23,21 +23,26 @@
 #include <iostream>
 #include <cstdio>
 
-#include "parser/uetli_parser.h"
-#include "semantic/TreeBuilder.h"
-#include "code/StackCodeGenerator.h"
-#include "code/AssemblyGenerator.h"
+#include "Interface.h"
 
 using namespace std;
 
 
 int main(int argc, char** argv)
 {
-    try {
-        cout << "Welcome to Uetli!\n";
 
-        ::uetli_parser_in = stdin;
-        ::uetli_parser_parse();
+    ConsoleInterface* interface;
+
+    interface = new UetliConsoleInterface(argc, argv);
+
+    try {
+
+        interface->run();
+
+        if (parsedClasses == 0) {
+            std::cout << "Aborting Compilation" << std::endl;
+            return 1;
+        }
 
         uetli::semantic::TreeBuilder tb(*parsedClasses);
 
@@ -79,9 +84,11 @@ int main(int argc, char** argv)
     }
     catch (const char* err) {
         std::cerr << "compilation terminated: " << err << "\n";
+        return 1;
     }
     catch (...) {
         std::cerr << "compilation terminated!\n";
+        return 1;
     }
 
     return 0;

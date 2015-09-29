@@ -1,7 +1,7 @@
 CC := clang
 CCFLAGS := -O3 -fPIC -g
 CXX := clang++
-CXXFLAGS := -O3 -fPIC
+CXXFLAGS := -O3 -fPIC -g
 
 AR := ar
 

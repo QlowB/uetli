@@ -47,6 +47,8 @@ namespace uetli
             class PrintInstruction;
 
             class Subroutine;
+                class SubroutineLink;
+                class DirectSubroutine;
 
         // only for debug purpose
         std::string getDescription(StackInstruction*);
@@ -256,22 +258,42 @@ public:
 };
 
 
-class uetli::code::Subroutine : public StackInstruction
+class uetli::code::Subroutine
 {
-public:
-    Word localVariableCount;
-    std::vector<StackInstruction*> instructions;
+protected:
     std::string name;
 public:
-    Subroutine(Word localVariableCount, const std::string& name);
-
-    virtual void execute(std::vector<void*>& stack, std::vector<void*>&) const;
-    
-    virtual std::string toString(void) const;
-
+    Subroutine(const std::string& name);
     const std::string& getName(void) const;
 
+    virtual ~Subroutine(void);
+};
+
+
+class uetli::code::SubroutineLink : public Subroutine
+{
+public:
+    SubroutineLink(const std::string& name);
+};
+
+
+class uetli::code::DirectSubroutine :
+        public Subroutine,
+        public StackInstruction
+{
+protected:
+    Word localVariableCount;
+    std::vector<StackInstruction*> instructions;
+
+public:
+    DirectSubroutine(Word localVariableCount, const std::string& name);
+
+    virtual void execute(std::vector<void*>& stack, std::vector<void*>&) const;
+
+    virtual std::string toString(void) const;
+
     void addInstruction(StackInstruction* instruction);
+    std::vector<StackInstruction*>& getInstructions(void);
 
     Word getLocalVariableCount(void) const;
     void setLocalVariableCount(Word newCount);

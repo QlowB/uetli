@@ -104,7 +104,7 @@ size_t Scope::getVariableCount(void) const
 }
 
 
-size_t Scope::getVariableIndex(const Variable* variable) const
+size_t Scope::getStackIndex(const Variable* variable) const
 {
     return getVariableCount() - variableIndices.get(variable);
 }

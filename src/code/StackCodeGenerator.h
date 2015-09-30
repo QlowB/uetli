@@ -37,13 +37,13 @@ namespace uetli
 class uetli::code::StackCodeGenerator
 {
     const semantic::Method* method;
-    Subroutine* output;
+    DirectSubroutine* output;
 public:
     StackCodeGenerator(const semantic::Method* method);
 
 
     void generateCode(void);
-    Subroutine* getGeneratedCode(void);
+    DirectSubroutine* getGeneratedCode(void);
 };
 
 

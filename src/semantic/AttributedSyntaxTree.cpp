@@ -108,7 +108,20 @@ Method* EffectiveClass::getMethod(const std::string& name)
 }
 
 
-Statement::Statement(void)
+LanguageObject::LanguageObject(Scope* scope) :
+    scope(scope)
+{
+}
+
+
+Scope* LanguageObject::getScope(void)
+{
+    return scope;
+}
+
+
+Statement::Statement(Scope* scope) :
+    LanguageObject(scope)
 {
 }
 
@@ -118,8 +131,11 @@ Statement::~Statement(void)
 }
 
 
-StatementBlock::StatementBlock(void)
+StatementBlock::StatementBlock(Scope* scope) :
+    LanguageObject(scope),
+    Statement(scope)
 {
+    localScope.setParentScope(scope);
 }
 
 
@@ -176,7 +192,8 @@ void StatementBlock::generateStatementCode(
 }
 
 
-Expression::Expression(void)
+Expression::Expression(Scope* scope) :
+    LanguageObject(scope)
 {
 }
 
@@ -186,16 +203,21 @@ Expression::~Expression(void)
 }
 
 
-OperationExpression::OperationExpression(Method* operationMethod) :
-    operationMethod(operationMethod)
+OperationExpression::OperationExpression(Scope* scope,
+                                         Method* operationMethod) :
+    LanguageObject(scope),
+    Expression(scope), operationMethod(operationMethod)
 {
 }
 
 
-BinaryOperationExpression::BinaryOperationExpression(Method* operationMethod,
+BinaryOperationExpression::BinaryOperationExpression(Scope* scope,
+                                                     Method* operationMethod,
                                                      Expression* left,
                                                      Expression* right) :
-    OperationExpression(operationMethod), left(left), right(right)
+    LanguageObject(scope),
+    OperationExpression(scope, operationMethod),
+    left(left), right(right)
 {
 }
 
@@ -211,9 +233,11 @@ void BinaryOperationExpression::generateExpressionCode(
 }
 
 
-UnaryOperationExpression::UnaryOperationExpression(Method* operationMethod,
+UnaryOperationExpression::UnaryOperationExpression(Scope* scope,
+                                                   Method* operationMethod,
                                                    Expression* operand) :
-    OperationExpression(operationMethod), operand(operand)
+    LanguageObject(scope),
+    OperationExpression(scope, operationMethod), operand(operand)
 {
 }
 
@@ -228,9 +252,12 @@ void UnaryOperationExpression::generateExpressionCode(
 }
 
 
-NewVariableStatement::NewVariableStatement(Class* type, const std::string& name,
-                                           Scope* scope) :
-    newVariable(new Variable(type, name, scope))
+NewVariableStatement::NewVariableStatement(Scope* scope,
+                                           Class* type,
+                                           const std::string& name) :
+    LanguageObject(scope),
+    Statement(scope),
+    newVariable(new Variable(scope, type, name))
 {
 }
 
@@ -255,7 +282,11 @@ void NewVariableStatement::generateStatementCode(
 
 
 
-AssignmentStatement::AssignmentStatement(Variable* lvalue, Expression* rvalue) :
+AssignmentStatement::AssignmentStatement(Scope* scope,
+                                         Variable* lvalue,
+                                         Expression* rvalue) :
+    LanguageObject(scope),
+    Statement(scope),
     lvalue(lvalue), rvalue(rvalue)
 {
 }
@@ -265,14 +296,16 @@ void AssignmentStatement::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
     size_t fromTop = scope->getStackIndex(lvalue);
-    rvalue->generateExpressionCode(rvalue);
+    rvalue->generateExpressionCode(code);
     code::StoreInstruction* store = new code::StoreInstruction(fromTop);
     code.push_back(store);
 }
 
 
-CallStatement::CallStatement(Method* method,
+CallStatement::CallStatement(Scope* scope, Method* method,
                              const std::vector<Expression*> arguments) :
+    LanguageObject(scope),
+    Statement(scope), Expression(scope),
     method(method), arguments(arguments)
 {
 }
@@ -293,8 +326,10 @@ void CallStatement::generateExpressionCode(
 }
 
 
-Variable::Variable(Class* type, const std::string& name, Scope* scope) :
-    type(type), name(name), scope(scope)
+Variable::Variable(Scope* scope, Class* type, const std::string& name) :
+    LanguageObject(scope),
+    Expression(scope),
+    type(type), name(name)
 {
 }
 
@@ -344,7 +379,8 @@ Field::Field(Class* wrapper, Class* returnType, const std::string& name) :
 
 Method::Method(Class* wrapper, Class* returnType, const std::string& name,
                unsigned int argumentCount) :
-    Feature(wrapper, returnType, name), argumentCount(argumentCount)
+    Feature(wrapper, returnType, name),
+    argumentCount(argumentCount), content(&methodScope)
 {
 }
 

@@ -50,7 +50,7 @@ protected:
 public:
 
     ConsoleInterface(int argc, char** argv);
-    ~ConsoleInterface(void);
+    virtual ~ConsoleInterface(void);
 
     virtual int run(void) = 0;
 

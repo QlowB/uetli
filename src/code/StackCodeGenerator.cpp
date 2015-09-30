@@ -27,18 +27,18 @@ using namespace uetli::code;
 StackCodeGenerator::StackCodeGenerator(const semantic::Method* method) :
     method(method)
 {
-    output = new Subroutine(method->getContent().getLocalVariableCount(),
+    output = new DirectSubroutine(method->getContent().getLocalVariableCount(),
             method->getName());
 }
 
 
 void StackCodeGenerator::generateCode(void)
 {
-    method->getContent().generateStatementCode(output->instructions);
+    method->getContent().generateStatementCode(output->getInstructions());
 }
 
 
-Subroutine* StackCodeGenerator::getGeneratedCode(void)
+DirectSubroutine* StackCodeGenerator::getGeneratedCode(void)
 {
     return output;
 }

@@ -121,7 +121,7 @@ uetli::semantic::Statement* NewVariableStatement::getAttributedStatement(
         semantic::Scope* scope) const
 {
     semantic::NewVariableStatement* nvs =
-        new semantic::NewVariableStatement(scope->findClass(type),  name, scope);
+        new semantic::NewVariableStatement(scope, scope->findClass(type), name);
     scope->addVariable(nvs->getVariable());
     return nvs;
 }
@@ -143,6 +143,7 @@ semantic::Statement* AssignmentStatement::getAttributedStatement(
         throw "lvalue must be variable";
 
     return new semantic::AssignmentStatement(
+        scope,
         lvalue,
         rightSide->getAttributedExpression(scope)
     );
@@ -158,9 +159,7 @@ DoEndBlock::DoEndBlock(const std::vector<Statement *>& instructions):
 semantic::Statement* DoEndBlock::getAttributedStatement(
         semantic::Scope* scope) const
 {
-    semantic::StatementBlock* block = new semantic::StatementBlock();
-
-    block->getLocalScope()->setParentScope(scope);
+    semantic::StatementBlock* block = new semantic::StatementBlock(scope);
 
     typedef std::vector<Statement*>::const_iterator StatIterator;
     for (StatIterator i = statements.begin(); i != statements.end(); i++) {
@@ -178,7 +177,8 @@ Expression::~Expression(void)
 }
 
 
-CallOrVariableStatement::CallOrVariableStatement(const std::string& methodName) :
+CallOrVariableStatement::CallOrVariableStatement
+    (const std::string& methodName) :
     methodName(methodName)
 {
 }
@@ -194,7 +194,7 @@ CallOrVariableStatement::CallOrVariableStatement(const std::string& methodName,
 uetli::semantic::Expression* CallOrVariableStatement::getAttributedExpression(
         semantic::Scope* scope) const
 {
-    std::cout << "searching for method: " << methodName << std::endl;;
+    std::cout << "searching for method: " << methodName << std::endl;
     semantic::Method* toCall = scope->findMethod(methodName);
 
     if (toCall != 0) {
@@ -208,7 +208,7 @@ uetli::semantic::Expression* CallOrVariableStatement::getAttributedExpression(
                         this->arguments[i]->getAttributedExpression(scope));
         }
 
-        return new semantic::CallStatement(toCall, arguments);
+        return new semantic::CallStatement(scope, toCall, arguments);
     }
 
     semantic::Variable* toExpress = scope->findVariable(methodName);
@@ -249,7 +249,8 @@ uetli::semantic::Expression* BinaryOperationExpression::getAttributedExpression(
     semantic::Method* operationMethod = scope->findMethod(this->operatorToken);
 
     semantic::BinaryOperationExpression* boe =
-        new semantic::BinaryOperationExpression(operationMethod, left, right);
+        new semantic::BinaryOperationExpression(scope, operationMethod,
+                                                left, right);
     return boe;
 }
 
@@ -273,7 +274,8 @@ uetli::semantic::Expression* UnaryOperationExpression::getAttributedExpression(
         throw "error: no such unary operator defined!";
 
     semantic::UnaryOperationExpression* uoe =
-            new semantic::UnaryOperationExpression(operationMethod, operand);
+            new semantic::UnaryOperationExpression(scope, operationMethod,
+                                                   operand);
 
     return uoe;
 }
@@ -285,28 +287,3 @@ ArgumentDeclaration::ArgumentDeclaration(const std::string& type,
 {
 }
 
-/*
-#include <stdio.h>
-extern FILE* uetli_parser_in;
-extern FILE* uetli_parser_out;
-#include "Parser.hpp"
-
-extern std::vector<uetli::parser::ClassDeclaration*>* parsedClasses;
-
-
-int main (void)
-{
-    ::uetli_parser_in = stdin;
-    ::uetli_parser_out = stdout;
-    uetli_parser_parse();
-
-    printf("Printing classes!\n");
-    if (parsedClasses != 0) {
-        printf("Now!\n");
-        for (int i = 0; i < parsedClasses->size(); i++) {
-            printf("%s\n", parsedClasses->at(i)->name.c_str());
-        }
-    }
-    return 0;
-}
-*/

@@ -147,7 +147,10 @@ CallInstruction::CallInstruction(Subroutine* subroutine) :
 void CallInstruction::execute(std::vector<void*>& stack,
                               std::vector<void*>& variableStack) const
 {
-    subroutine->execute(stack, variableStack);
+    DirectSubroutine* ds = dynamic_cast<DirectSubroutine*> (subroutine);
+    if (ds != 0) {
+        ds->execute(stack, variableStack);
+    }
 }
 
 
@@ -233,13 +236,37 @@ std::string PrintInstruction::toString(void) const
 }
 
 
-Subroutine::Subroutine(Word localVariableCount, const std::string& name) :
-    localVariableCount(localVariableCount), name(name)
+Subroutine::Subroutine(const std::string& name) :
+    name(name)
 {
 }
 
 
-void Subroutine::execute(std::vector<void*>& stack,
+Subroutine::~Subroutine(void)
+{
+}
+
+
+const std::string& Subroutine::getName(void) const
+{
+    return name;
+}
+
+
+SubroutineLink::SubroutineLink(const std::string& name) :
+    Subroutine(name)
+{
+}
+
+
+DirectSubroutine::DirectSubroutine(Word localVariableCount, const std::string& name) :
+    Subroutine(name),
+    localVariableCount(localVariableCount)
+{
+}
+
+
+void DirectSubroutine::execute(std::vector<void*>& stack,
                          std::vector<void*>& variableStack) const
 {
     for (Word i = 0; i < localVariableCount; i++)
@@ -256,7 +283,7 @@ void Subroutine::execute(std::vector<void*>& stack,
 }
 
 
-std::string Subroutine::toString(void) const
+std::string DirectSubroutine::toString(void) const
 {
     std::stringstream str;
     str << "sub # start of subroutine"
@@ -268,31 +295,31 @@ std::string Subroutine::toString(void) const
         str << (*i)->toString();
     }
 
-    str << "end_sub # end of subroutine";
+    str << "end_sub # end of subroutine";
 
     return str.str();
 }
 
 
-const std::string& Subroutine::getName(void) const
-{
-    return name;
-}
-
-
-void Subroutine::addInstruction(StackInstruction* instruction)
+void DirectSubroutine::addInstruction(StackInstruction* instruction)
 {
     this->instructions.push_back(instruction);
 }
 
 
-Word Subroutine::getLocalVariableCount(void) const
+std::vector<StackInstruction*>& DirectSubroutine::getInstructions(void)
+{
+    return instructions;
+}
+
+
+Word DirectSubroutine::getLocalVariableCount(void) const
 {
     return localVariableCount;
 }
 
 
-void Subroutine::setLocalVariableCount(Word newCount)
+void DirectSubroutine::setLocalVariableCount(Word newCount)
 {
     this->localVariableCount = newCount;
 }

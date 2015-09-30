@@ -50,7 +50,7 @@ UetliConsoleInterface::UetliConsoleInterface(int argc, char** argv) :
     ConsoleInterface(argc, argv)
 {
     for (size_t i = 1; i < arguments.size(); i++) {
-        if (arguments[i] == "-o") {           
+        if (arguments[i] == "-o") {
             if (arguments.size() > i + 1) {
                 outputFilename = arguments[i + 1];
                 i++;
@@ -129,7 +129,7 @@ int UetliConsoleInterface::run(void)
             uetli::code::StackCodeGenerator scg(cl->getMethod(0));
             scg.generateCode();
 
-            uetli::code::Subroutine* rout = scg.getGeneratedCode();
+            uetli::code::DirectSubroutine* rout = scg.getGeneratedCode();
             fprintf(out, "stack instruction dump:\n%s",
                     rout->toString().c_str());
             /*for (int i = 0; i < rout->instructions.size(); i++) {

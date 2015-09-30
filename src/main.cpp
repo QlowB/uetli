@@ -30,24 +30,28 @@ using namespace uetli;
 
 int main(int argc, char** argv)
 {
+    int returnValue = 0;
 
     ConsoleInterface* interface;
 
     interface = new UetliConsoleInterface(argc, argv);
 
     try {
-        interface->run();
+        returnValue = interface->run();
     }
     catch (const char* err) {
         std::cerr << "compilation terminated: " << err << "\n";
-        return 1;
+        returnValue = 1;
     }
     catch (...) {
         std::cerr << "compilation terminated!\n";
-        return 1;
+        returnValue = 1;
     }
 
-    return 0;
+    delete interface;
+    interface = 0;
+
+    return returnValue;
 }
 
 

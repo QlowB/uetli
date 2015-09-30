@@ -115,13 +115,18 @@ public:
 
 class uetli::semantic::LanguageObject
 {
+protected:
+    Scope* scope;
+public:
+    LanguageObject(Scope* scope);
+    Scope* getScope(void);
 };
 
 
 class uetli::semantic::Statement : public virtual LanguageObject
 {
 public:
-    Statement(void);
+    Statement(Scope* scope);
     virtual ~Statement(void);
 
     ///
@@ -148,7 +153,7 @@ class uetli::semantic::StatementBlock : public Statement
     /// maps the local variables to their index in <code>localVariables</code>
     util::HashMap<Variable*, size_t> variableToIndex;
 public:
-    StatementBlock(void);
+    StatementBlock(Scope* scope);
 
     size_t getNStatements(void) const;
     Statement* getStatement(size_t index);
@@ -162,10 +167,10 @@ public:
 };
 
 
-class uetli::semantic::Expression
+class uetli::semantic::Expression : public virtual LanguageObject
 {
 public:
-    Expression(void);
+    Expression(Scope* scope);
     virtual ~Expression(void);
 
     virtual void generateExpressionCode(
@@ -177,7 +182,7 @@ class uetli::semantic::OperationExpression : public Expression
 {
     Method* operationMethod;
 public:
-    OperationExpression(Method* operationMethod);
+    OperationExpression(Scope* scope, Method* operationMethod);
 
     virtual void generateExpressionCode(
             std::vector<code::StackInstruction*>& code) const = 0;
@@ -189,7 +194,7 @@ class uetli::semantic::BinaryOperationExpression : public OperationExpression
     Expression* left;
     Expression* right;
 public:
-    BinaryOperationExpression(Method* operationMethod,
+    BinaryOperationExpression(Scope* scope, Method* operationMethod,
                               Expression* left, Expression* right);
 
     virtual void generateExpressionCode(
@@ -201,7 +206,8 @@ class uetli::semantic::UnaryOperationExpression : public OperationExpression
 {
     Expression* operand;
 public:
-    UnaryOperationExpression(Method* operationMethod, Expression* operand);
+    UnaryOperationExpression(Scope* scope, Method* operationMethod,
+                             Expression* operand);
 
     virtual void generateExpressionCode(
             std::vector<code::StackInstruction*>& code) const;
@@ -212,7 +218,8 @@ class uetli::semantic::NewVariableStatement : public Statement
 {
     Variable* newVariable;
 public:
-    NewVariableStatement(Class* type, const std::string& name, Scope* scope);
+    NewVariableStatement(Scope* scope,
+                         Class* type, const std::string& name);
     ~NewVariableStatement(void);
     Variable* getVariable(void);
 
@@ -231,7 +238,7 @@ public:
     /// \param lvalue destination of the assignment
     /// \param rvalue source of the assignment
     ///
-    AssignmentStatement(Variable* lvalue, Expression* rvalue);
+    AssignmentStatement(Scope* scope, Variable* lvalue, Expression* rvalue);
 
     virtual void generateStatementCode(
             std::vector<code::StackInstruction*>& code) const;
@@ -244,7 +251,8 @@ class uetli::semantic::CallStatement : public Statement, public Expression
     std::vector<Expression*> arguments;
 
 public:
-    CallStatement(Method* method, const std::vector<Expression*> arguments);
+    CallStatement(Scope* scope, Method* method,
+                  const std::vector<Expression*> arguments);
 
     virtual void generateStatementCode(
             std::vector<code::StackInstruction*>& code) const;
@@ -258,9 +266,8 @@ class uetli::semantic::Variable : public Expression
 {
     Class* type;
     std::string name;
-    Scope* scope;
 public:
-    Variable(Class* type, const std::string& name, Scope* scope);
+    Variable(Scope* scope, Class* type, const std::string& name);
 
     const std::string& getName(void) const;
 

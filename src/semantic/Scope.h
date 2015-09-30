@@ -55,7 +55,7 @@ class uetli::semantic::Scope
 
     /// links every variable to an index in the variable list
     /// this map is the reverse function of std::vector<Variable*> variables;
-    uetli::util::HashMap<Variable*, size_t> variableIndices;
+    uetli::util::HashMap<const Variable*, size_t> variableIndices;
 
     /// holds variables accessible by name
     uetli::util::HashMap<std::string, Variable*> variableLinks;
@@ -77,7 +77,14 @@ public:
 
 
     size_t getVariableCount(void) const;
-    size_t getVariableIndex(const Variable* variable) const;
+
+    ///
+    /// \brief get the index of a variable from top of the stack
+    ///
+    /// \param variable the variable to search for
+    /// \return the index of this variable if counted from top of the stack
+    ///
+    size_t getStackIndex(const Variable* variable) const;
 
     void addMethod(Method* variable);
     void addClass(Class* variable);

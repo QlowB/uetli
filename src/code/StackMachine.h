@@ -74,6 +74,13 @@ public:
     ///
     virtual void execute(std::vector<void*>& stack,
                          std::vector<void*>& variableStack) const = 0;
+
+    ///
+    /// \brief create a short description of the instruction
+    ///
+    /// \return the description of the instruction
+    ///
+    virtual std::string toString(void) const = 0;
 };
 
 
@@ -92,6 +99,8 @@ public:
 
     virtual void execute(std::vector<void*>& stack,
                          std::vector<void*>& variableStack) const;
+    
+    virtual std::string toString(void) const;
 };
 
 
@@ -110,6 +119,8 @@ public:
 
     virtual void execute(std::vector<void*>& stack,
                          std::vector<void*>& variableStack) const;
+    
+    virtual std::string toString(void) const;
 };
 
 
@@ -127,6 +138,8 @@ public:
     DereferenceInstruction(Word offset);
 
     virtual void execute(std::vector<void*>& stack, std::vector<void*>&) const;
+    
+    virtual std::string toString(void) const;
 };
 
 
@@ -144,6 +157,8 @@ public:
     DereferenceStoreInstruction(Word offset);
 
     virtual void execute(std::vector<void*>& stack, std::vector<void*>&) const;
+    
+    virtual std::string toString(void) const;
 };
 
 
@@ -158,6 +173,8 @@ public:
 
     virtual void execute(std::vector<void*>& stack,
                          std::vector<void*>& variableStack) const;
+
+    virtual std::string toString(void) const;
 };
 
 
@@ -173,6 +190,8 @@ public:
 
     virtual void execute(std::vector<void*>& stack,
                          std::vector<void*>& variableStack) const;
+    
+    virtual std::string toString(void) const;
 };
 
 
@@ -189,6 +208,8 @@ public:
 
     virtual void execute(std::vector<void*>& stack,
                          std::vector<void*>& variableStack) const;
+    
+    virtual std::string toString(void) const;
 };
 
 
@@ -203,6 +224,8 @@ class uetli::code::AllocateInstruction : public StackInstruction
 public:
 
     virtual void execute(std::vector<void*>& stack, std::vector<void*>&) const;
+    
+    virtual std::string toString(void) const;
 };
 
 
@@ -218,6 +241,8 @@ public:
 
     virtual void execute(std::vector<void*>& stack,
                          std::vector<void*>& variableStack) const;
+    
+    virtual std::string toString(void) const;
 };
 
 
@@ -226,6 +251,8 @@ class uetli::code::PrintInstruction : public StackInstruction
 public:
     virtual void execute(std::vector<void*>& stack,
                          std::vector<void*>& variableStack) const;
+    
+    virtual std::string toString(void) const;
 };
 
 
@@ -234,10 +261,15 @@ class uetli::code::Subroutine : public StackInstruction
 public:
     Word localVariableCount;
     std::vector<StackInstruction*> instructions;
+    std::string name;
 public:
-    Subroutine(Word localVariableCount);
+    Subroutine(Word localVariableCount, const std::string& name);
 
     virtual void execute(std::vector<void*>& stack, std::vector<void*>&) const;
+    
+    virtual std::string toString(void) const;
+
+    const std::string& getName(void) const;
 
     void addInstruction(StackInstruction* instruction);
 

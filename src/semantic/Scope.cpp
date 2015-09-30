@@ -98,8 +98,34 @@ Variable* Scope::findVariable(const std::string& name)
 }
 
 
+size_t Scope::getVariableCount(void) const
+{
+    return variables.size();
+}
+
+
+size_t Scope::getVariableIndex(const Variable* variable) const
+{
+    return getVariableCount() - variableIndices.get(variable);
+}
+ 
+
+void Scope::addMethod(Method* method)
+{
+    methodLinks.put(method->getName(), method);
+}
+
+
+void Scope::addClass(Class* newClass)
+{
+    classLinks.put(newClass->getName(),newClass);
+}
+
+
 void Scope::addVariable(Variable* variable)
 {
+    variables.push_back(variable);
+    variableIndices.put(variable, variables.size() - 1);
     variableLinks.put(variable->getName(), variable);
 }
 

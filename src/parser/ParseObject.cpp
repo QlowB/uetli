@@ -20,6 +20,7 @@
 // =============================================================================
 
 #include "ParseObject.h"
+#include <iostream>
 
 using namespace uetli::parser;
 using namespace uetli;
@@ -193,6 +194,7 @@ CallOrVariableStatement::CallOrVariableStatement(const std::string& methodName,
 uetli::semantic::Expression* CallOrVariableStatement::getAttributedExpression(
         semantic::Scope* scope) const
 {
+    std::cout << "searching for method: " << methodName << std::endl;;
     semantic::Method* toCall = scope->findMethod(methodName);
 
     if (toCall != 0) {

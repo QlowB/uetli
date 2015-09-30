@@ -107,6 +107,15 @@ public:
     ~HashMap(void);
 
     ///
+    /// Returns the number of elements that are currently held in this
+    /// HashMap. This has nothing to do with the allocated table where
+    /// entries are stored.
+    ///
+    /// \return the number of currently held entries
+    ///
+    size_t getElementCount(void) const;
+
+    ///
     /// Resizes the table of the hashmap. The table may be longer than
     /// the specified size.
     ///

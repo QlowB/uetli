@@ -50,6 +50,14 @@ class uetli::semantic::Scope
 
     std::vector<Scope*> childrenScopes;
 
+    /// holds variables in the order they were defined
+    std::vector<Variable*> variables;
+
+    /// links every variable to an index in the variable list
+    /// this map is the reverse function of std::vector<Variable*> variables;
+    uetli::util::HashMap<Variable*, size_t> variableIndices;
+
+    /// holds variables accessible by name
     uetli::util::HashMap<std::string, Variable*> variableLinks;
     uetli::util::HashMap<std::string, Method*> methodLinks;
     uetli::util::HashMap<std::string, Class*> classLinks;
@@ -67,6 +75,12 @@ public:
     Class* findClass(const std::string& name);
     Variable* findVariable(const std::string& name);
 
+
+    size_t getVariableCount(void) const;
+    size_t getVariableIndex(const Variable* variable) const;
+
+    void addMethod(Method* variable);
+    void addClass(Class* variable);
     void addVariable(Variable* variable);
 };
 

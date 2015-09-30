@@ -51,6 +51,7 @@ void TreeBuilder::build(void)
 
         ec->getClassScope()->setParentScope(globalScope);
 
+        globalScope->addClass(ec);
         attributedClasses.push_back(ec);
         classesByName.put((*i)->name, ec);
         
@@ -110,7 +111,9 @@ void TreeBuilder::addFeatures(EffectiveClass* effClass,
                 // *i is not a field, therefore it must be a method
                 Method* m = new Method(effClass, type, method->name,
                                        method->arguments.size());
+                effClass->getClassScope()->addMethod(m);
                 m->getMethodScope()->setParentScope(effClass->getClassScope());
+                //effClass->getClassScope()->addChildScope(m->getMethodScope());
                 effClass->addMethod(m);
                 methodsToProcess.push(MethodLink(method, m));
             }

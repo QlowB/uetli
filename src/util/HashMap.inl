@@ -24,42 +24,49 @@
 template <typename K, typename V, typename H>
 uetli::util::HashMap<K, V, H>::Entry::Entry(void)
 {
-	next = 0;
+    next = 0;
 }
 
 
 template <typename K, typename V, typename H>
 uetli::util::HashMap<K, V, H>::HashMap(void)
 {
-	size = standardSize;
-	nEntries = 0;
+    size = standardSize;
+    nEntries = 0;
     entryTable = new Entry*[size];
-	memset(entryTable, 0, standardSize * sizeof(Entry*));
-	updateHashMask();
+    memset(entryTable, 0, standardSize * sizeof(Entry*));
+    updateHashMask();
 }
 
 
 template <typename K, typename V, typename H>
 uetli::util::HashMap<K, V, H>::HashMap(const HashMap<K, V, H>& hashMap)
 {
-	this->size = hashMap.size;
-	updateHashMask();
-	entryTable = new Entry*[size];
+    this->size = hashMap.size;
+    updateHashMask();
+    entryTable = new Entry*[size];
     for (size_t i = 0; i < size; i++) {
-		const Entry* mapEntry = hashMap->entryTable[i];
+        const Entry* mapEntry = hashMap->entryTable[i];
 
-		while (mapEntry != 0) {
-			this->put(mapEntry->key, mapEntry->value);
-			mapEntry = mapEntry->next;
-		}
-	}
+        while (mapEntry != 0) {
+            this->put(mapEntry->key, mapEntry->value);
+            mapEntry = mapEntry->next;
+        }
+    }
 }
 
 
 template <typename K, typename V, typename H>
 uetli::util::HashMap<K, V, H>::~HashMap(void)
 {
-	deleteContent();
+    deleteContent();
+}
+
+
+template <typename K, typename V, typename H>
+size_t uetli::util::HashMap<K, V, H>::getElementCount(void) const
+{
+    return nEntries;
 }
 
 
@@ -67,26 +74,26 @@ template <typename K, typename V, typename H>
 void uetli::util::HashMap<K, V, H>::resize(size_t newSize)
 {
     size_t oldSize = size;
-	{
+    {
         size_t i = 0;
-        for (i = 0; (1U << i) < newSize && i <= sizeof(size_t) * 8; i++);
-		size = 1 << i;
-	}
-	Entry** oldEntryTable = entryTable;
-	entryTable = new Entry*[size];
-	memset(entryTable, 0, size * sizeof(Entry*));
-	updateHashMask();
+        for (i = 0; (1U << i) < newSize && i <= sizeof(size_t) * 8;) i++;
+            size = 1 << i;
+    }
+    Entry** oldEntryTable = entryTable;
+    entryTable = new Entry*[size];
+    memset(entryTable, 0, size * sizeof(Entry*));
+    updateHashMask();
 
-	nEntries = 0;
+    nEntries = 0;
 
-	for (unsigned int i = 0; i < oldSize; i++) {
-		Entry* entry = oldEntryTable[i];
-		while (entry != 0) {
-			Entry* next = entry->next;
-			putEntry(entry);
-			entry = next;
-		}
-	}
+    for (unsigned int i = 0; i < oldSize; i++) {
+        Entry* entry = oldEntryTable[i];
+        while (entry != 0) {
+            Entry* next = entry->next;
+            putEntry(entry);
+            entry = next;
+        }
+    }
 }
 
 
@@ -94,12 +101,12 @@ template <typename K, typename V, typename H>
 void uetli::util::HashMap<K, V, H>::put(const K& key, const V& value)
 {
     if (nEntries > size + (size / 4)) {
-		resize(size * 2);
-	}
+        resize(size * 2);
+    }
 
-	Entry* entry = new Entry();
-	entry->key = key;
-	entry->value = value;
+    Entry* entry = new Entry();
+    entry->key = key;
+    entry->value = value;
     putEntry(entry);
 }
 
@@ -108,15 +115,15 @@ template <typename K, typename V, typename H>
 bool uetli::util::HashMap<K, V, H>::contains(const K& key) const
 {
     size_t index = getEntryIndex(key);
-	const Entry* entry = entryTable[index];
-	while (entry != 0) {
+    const Entry* entry = entryTable[index];
+    while (entry != 0) {
 
-		if (entry->key == key)
-			return true;
+        if (entry->key == key)
+            return true;
 
-		entry = entry->next;
-	}
-	return false;
+        entry = entry->next;
+    }
+    return false;
 }
 
 
@@ -170,12 +177,12 @@ V& uetli::util::HashMap<K, V, H>::get(const K& key)
 template <typename K, typename V, typename H>
 void uetli::util::HashMap<K, V, H>::clear(void)
 {
-	deleteContent();
+    deleteContent();
 
-	size = standardSize;
-	entryTable = new Entry*[size];
-	memset(entryTable, 0, standardSize * sizeof(Entry*));
-	updateHashMask();
+    size = standardSize;
+    entryTable = new Entry*[size];
+    memset(entryTable, 0, standardSize * sizeof(Entry*));
+    updateHashMask();
 }
 
 
@@ -183,22 +190,22 @@ template <typename K, typename V, typename H>
 void uetli::util::HashMap<K, V, H>::deleteContent(void)
 {
     for (size_t i = 0; i < size; i++) {
-		while (entryTable[i] != 0) {
-			Entry* e = entryTable[i];
-			entryTable[i] = e->next;
-			delete e;
-			e = 0;
-		}
-	}
-	delete[] entryTable;
-	entryTable = 0;
+        while (entryTable[i] != 0) {
+            Entry* e = entryTable[i];
+            entryTable[i] = e->next;
+            delete e;
+            e = 0;
+        }
+    }
+    delete[] entryTable;
+    entryTable = 0;
 }
 
 
 template <typename K, typename V, typename H>
 inline void uetli::util::HashMap<K, V, H>::updateHashMask(void)
 {
-	hashMask = size - 1;
+    hashMask = size - 1;
 }
 
 
@@ -212,25 +219,25 @@ inline size_t uetli::util::HashMap<K, V, H>::getEntryIndex(const K& key) const
 template <typename K, typename V, typename H>
 void uetli::util::HashMap<K, V, H>::putEntry(void* e)
 {
-	Entry* toAdd = (Entry*) e;
+    Entry* toAdd = (Entry*) e;
     size_t index = getEntryIndex(toAdd->key);
-	Entry* entry = entryTable[index];
-	Entry* lastEntry = 0;
+    Entry* entry = entryTable[index];
+    Entry* lastEntry = 0;
 
-	while (entry != 0) {
-		lastEntry = entry;
-		entry = entry->next;
-	}
-	
-	entry = toAdd;
-	if (lastEntry != 0)
-		lastEntry->next = entry;
-	else
-		entryTable[index] = entry;
+    while (entry != 0) {
+        lastEntry = entry;
+        entry = entry->next;
+    }
+    
+    entry = toAdd;
+    if (lastEntry != 0)
+        lastEntry->next = entry;
+    else
+        entryTable[index] = entry;
 
-	entry->next = 0;
+    entry->next = 0;
 
-	nEntries++;
+    nEntries++;
 }
 
 
@@ -270,4 +277,6 @@ inline size_t uetli::util::DefaultHash<K>::hash(const K& key)
         return hash;
     }
 }
+
+
 

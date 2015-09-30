@@ -27,7 +27,8 @@ using namespace uetli::code;
 StackCodeGenerator::StackCodeGenerator(const semantic::Method* method) :
     method(method)
 {
-    output = new Subroutine(method->getContent().getLocalVariableCount());
+    output = new Subroutine(method->getContent().getLocalVariableCount(),
+            method->getName());
 }
 
 

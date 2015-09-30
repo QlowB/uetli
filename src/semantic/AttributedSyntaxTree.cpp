@@ -264,8 +264,10 @@ AssignmentStatement::AssignmentStatement(Variable* lvalue, Expression* rvalue) :
 void AssignmentStatement::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
-    std::cerr << "not yet implemented in file " << __FILE__ <<
-        std::endl;
+    size_t fromTop = scope->getStackIndex(lvalue);
+    rvalue->generateExpressionCode(rvalue);
+    code::StoreInstruction* store = new code::StoreInstruction(fromTop);
+    code.push_back(store);
 }
 
 

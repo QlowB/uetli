@@ -21,6 +21,7 @@
 
 #include "StackMachine.h"
 #include <iostream>
+#include <sstream>
 
 using namespace uetli::code;
 
@@ -38,6 +39,15 @@ void LoadInstruction::execute(std::vector<void*>& stack,
 }
 
 
+std::string LoadInstruction::toString(void) const
+{
+    std::stringstream str;
+    str << "load " << fromTop << " # load from top of variable stack" <<
+        std::endl;    
+    return str.str();
+}
+
+
 StoreInstruction::StoreInstruction(Word fromTop) :
     fromTop(fromTop)
 {
@@ -49,6 +59,15 @@ void StoreInstruction::execute(std::vector<void*>& stack,
 {
     variableStack[variableStack.size() - 1 - fromTop] = *(stack.end() - 1);
     stack.pop_back();
+}
+
+
+std::string StoreInstruction::toString(void) const
+{
+    std::stringstream str;
+    str << "store " << fromTop << " # store at top of variable stack" <<
+        std::endl;    
+    return str.str();
 }
 
 
@@ -64,6 +83,15 @@ void DereferenceInstruction::execute(std::vector<void*>& stack,
     void* pointer = *(stack.end() - 1);
     pointer = (void*) (((char*) pointer) + offset);
     stack.push_back(*((void**) pointer));
+}
+
+
+std::string DereferenceInstruction::toString(void) const
+{
+    std::stringstream str;
+    str << "dereference " << offset<< " # dereference at top of instruction"
+       << " stack (argument = offset)" << std::endl;    
+    return str.str();
 }
 
 
@@ -84,10 +112,29 @@ void DereferenceStoreInstruction::execute(std::vector<void*>& stack,
 }
 
 
+std::string DereferenceStoreInstruction::toString(void) const
+{
+    std::stringstream str;
+    str << "dereference_store " << offset << " # stores the topmost value on "
+        << "the operand stack and stores it at the address stored in the second"
+       << " value on the operand stack (argument = offset)" << std::endl;
+    return str.str();
+}
+
+
 void PopInstruction::execute(std::vector<void*>& stack,
                              std::vector<void*>& variableStack) const
 {
     stack.pop_back();
+}
+
+
+std::string PopInstruction::toString(void) const
+{
+    std::stringstream str;
+    str << "pop # pops the topmost value from the operand "
+       << "stack" << std::endl;
+    return str.str();
 }
 
 
@@ -104,6 +151,15 @@ void CallInstruction::execute(std::vector<void*>& stack,
 }
 
 
+std::string CallInstruction::toString(void) const
+{
+    std::stringstream str;
+    str << "call " << subroutine->getName()  << " # calls a subroutine"
+       <<  std::endl;
+    return str.str();
+}
+
+
 LoadConstantInstruction::LoadConstantInstruction(Word constant) :
     constant(constant)
 {
@@ -117,12 +173,31 @@ void LoadConstantInstruction::execute(std::vector<void*>& stack,
 }
 
 
+std::string LoadConstantInstruction::toString(void) const
+{
+    std::stringstream str;
+    str << "load_const " << constant << " # puts a constant value on the stack"
+        << std::endl;
+    return str.str();
+}
+
+
+
 void AllocateInstruction::execute(std::vector<void*>& stack,
                                   std::vector<void*>&) const
 {
     Word val = (Word) *(stack.end() - 1);
     stack.pop_back();
     stack.push_back(new char[val]);
+}
+
+
+std::string AllocateInstruction::toString(void) const
+{
+    std::stringstream str;
+    str << "alloc " << " # allocates memory"
+        << std::endl;
+    return str.str();
 }
 
 
@@ -133,6 +208,15 @@ void DuplicateInstruction::execute(std::vector<void*>& stack,
 }
 
 
+std::string DuplicateInstruction::toString(void) const
+{
+    std::stringstream str;
+    str << "duplicate # duplicates value on top of stack"
+        << std::endl;
+    return str.str();
+}
+
+
 void PrintInstruction::execute(std::vector<void*>& stack,
                                std::vector<void*>&) const
 {
@@ -140,8 +224,17 @@ void PrintInstruction::execute(std::vector<void*>& stack,
 }
 
 
-Subroutine::Subroutine(Word localVariableCount) :
-    localVariableCount(localVariableCount)
+std::string PrintInstruction::toString(void) const
+{
+    std::stringstream str;
+    str << "print # prints out the value on top of the stack"
+        << std::endl;
+    return str.str();
+}
+
+
+Subroutine::Subroutine(Word localVariableCount, const std::string& name) :
+    localVariableCount(localVariableCount), name(name)
 {
 }
 
@@ -160,6 +253,30 @@ void Subroutine::execute(std::vector<void*>& stack,
 
     for (Word i = 0; i < localVariableCount; i++)
         variableStack.pop_back();
+}
+
+
+std::string Subroutine::toString(void) const
+{
+    std::stringstream str;
+    str << "sub # start of subroutine"
+        << std::endl;
+
+    typedef std::vector<StackInstruction*>::const_iterator InstructionIterator;
+    for (InstructionIterator i = instructions.begin();
+         i != instructions.end(); i++) {
+        str << (*i)->toString();
+    }
+
+    str << "end_sub # end of subroutine";
+
+    return str.str();
+}
+
+
+const std::string& Subroutine::getName(void) const
+{
+    return name;
 }
 
 

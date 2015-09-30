@@ -1,5 +1,5 @@
 CXX := clang++
-CXXFLAGS := -O3 -g
+CXXFLAGS := -g
 LINKFLAGS := -Lparser/ -luetli_parser -Lsemantic -luetli_semantic -Lutil -luetli_util -Lcode -luetli_code
 
 OBJECTS := main.o Interface.o

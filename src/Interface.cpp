@@ -130,10 +130,12 @@ int UetliConsoleInterface::run(void)
             scg.generateCode();
 
             uetli::code::Subroutine* rout = scg.getGeneratedCode();
-            for (int i = 0; i < rout->instructions.size(); i++) {
+            fprintf(out, "stack instruction dump:\n%s",
+                    rout->toString().c_str());
+            /*for (int i = 0; i < rout->instructions.size(); i++) {
                 fprintf(out, "instruction: %s\n", uetli::code::getDescription(
                              rout->instructions[i]).c_str());
-            }
+            }*/
         }
     }
 

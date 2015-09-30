@@ -40,6 +40,9 @@ namespace uetli
 
         class Scope;
 
+
+        class LanguageObject;
+
         class Statement;
             class StatementBlock;
             class NewVariableStatement;
@@ -110,7 +113,12 @@ public:
 };
 
 
-class uetli::semantic::Statement
+class uetli::semantic::LanguageObject
+{
+};
+
+
+class uetli::semantic::Statement : public virtual LanguageObject
 {
 public:
     Statement(void);

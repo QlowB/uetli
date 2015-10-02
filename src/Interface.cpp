@@ -88,12 +88,24 @@ int UetliConsoleInterface::run(void)
 {
     ::uetli_parser_in = in;                                              
     ::uetli_parser_error_out = error;
-     
+   
+    bool log = true; 
+
+
+    if (log) {
+        fprintf(out, "starting parsing...\n");
+    }
+    
     ::uetli_parser_parse();
+
+    if (log) {
+        fprintf(out, "done parsing\n");
+    }
 
     for (size_t i = 0; i < openedFiles.size(); i++) {
         fclose(openedFiles[i]);
     }
+
     openedFiles.clear(); 
 
     if (parsedClasses == 0) {
@@ -105,6 +117,10 @@ int UetliConsoleInterface::run(void)
     uetli::semantic::TreeBuilder tb(*parsedClasses);
 
     tb.build();
+
+    if (log) {
+        fprintf(out, "built attributed syntax tree.\n");
+    }
 
     for (size_t i = 0; i < parsedClasses->size(); i++) {
         delete parsedClasses->at(i);

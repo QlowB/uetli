@@ -102,11 +102,11 @@ void TreeBuilder::addFeatures(EffectiveClass* effClass,
             FieldDeclaration* field = dynamic_cast<FieldDeclaration*> (*i);
             MethodDeclaration* method = dynamic_cast<MethodDeclaration*> (*i);
             if (field != 0) {
-                std::cout << "Parsing Field!" << std::endl;
+                std::cout << "found field!" << std::endl;
                 effClass->addField(new Field(effClass, type, field->name));
             }
             else if (method != 0) {
-                std::cout << "Parsing Method!" << std::endl;
+                std::cout << "found method!" << std::endl;
 
                 // *i is not a field, therefore it must be a method
                 Method* m = new Method(effClass, type, method->name,
@@ -116,6 +116,9 @@ void TreeBuilder::addFeatures(EffectiveClass* effClass,
                 //effClass->getClassScope()->addChildScope(m->getMethodScope());
                 effClass->addMethod(m);
                 methodsToProcess.push(MethodLink(method, m));
+
+                //std::cout << "created attributed entry for method!" <<
+                //    std::endl;;
             }
             else {
                 throw "internal error";
@@ -146,9 +149,6 @@ void TreeBuilder::processStatement(EffectiveClass* ec, Scope* scope,
                                    parser::Statement* statement)
 {
 }
-
-
-
 
 
 

@@ -180,6 +180,7 @@ public:
 
 class uetli::semantic::OperationExpression : public Expression
 {
+protected:
     Method* operationMethod;
 public:
     OperationExpression(Scope* scope, Method* operationMethod);

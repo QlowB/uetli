@@ -179,16 +179,16 @@ void StatementBlock::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
     typedef std::vector<Statement*>::const_iterator StatIterator;
-    std::cout << "transforming: " << statements.size() << " instructions..." <<
-                 std::endl;
+//    std::cout << "transforming: " << statements.size() << " instructions..." <<
+//                 std::endl;
     for (StatIterator i = statements.begin(); i != statements.end(); i++) {
-        std::cout << "transforming an instruction: " << typeid(*i).name() <<
-            std::endl;
+//        std::cout << "transforming an instruction: " << typeid(*i).name() <<
+//            std::endl;
         (*i)->generateStatementCode(code);
-        std::cout << "transformed an instruction." << std::endl;
+//        std::cout << "transformed an instruction." << std::endl;
     }
-    std::cout << "transformed " << statements.size() << " instructions." <<
-    std::endl;
+//    std::cout << "transformed " << statements.size() << " instructions." <<
+//    std::endl;
 }
 
 
@@ -228,7 +228,9 @@ void BinaryOperationExpression::generateExpressionCode(
     left->generateExpressionCode(code);
     right->generateExpressionCode(code);
 
-    code::CallInstruction* callInstruction = new code::CallInstruction(0);
+    code::Subroutine* s = new code::SubroutineLink(operationMethod->getName());
+    
+    code::CallInstruction* callInstruction = new code::CallInstruction(s);
     code.push_back(callInstruction);
 }
 
@@ -247,7 +249,8 @@ void UnaryOperationExpression::generateExpressionCode(
 {
     operand->generateExpressionCode(code);
 
-    code::CallInstruction* callInstruction = new code::CallInstruction(0);
+    code::Subroutine* s = new code::SubroutineLink(operationMethod->getName());
+    code::CallInstruction* callInstruction = new code::CallInstruction(s);
     code.push_back(callInstruction);
 }
 
@@ -314,8 +317,10 @@ CallStatement::CallStatement(Scope* scope, Method* method,
 void CallStatement::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
-    
-    std::cerr << "not yet implemented in file " << __FILE__ << std::endl;
+    code::Subroutine* sub = new code::SubroutineLink(method->getName());
+    code::CallInstruction* ci = new code::CallInstruction(sub);
+    code.push_back(ci);
+//    std::cerr << "not yet implemented in file " << __FILE__ << std::endl;
 }
 
 
@@ -343,7 +348,7 @@ const std::string& Variable::getName(void) const
 void Variable::generateExpressionCode(
         std::vector<code::StackInstruction*>& code) const
 {
-    code.push_back(new code::LoadInstruction(0 /* TODO calc value */ ));
+    code.push_back(new code::LoadInstruction(scope->getStackIndex(this)));
 }
 
 

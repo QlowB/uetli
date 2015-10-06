@@ -25,9 +25,18 @@
 using namespace uetli::semantic::native;
 
 
-Integer::Integer(void)
+Integer::Integer(void) :
+    EffectiveClass("Integer")
 {
+    plus = new Method(this, this, "+", 1);
+    minus = new Method(this, this, "-", 1);
+    mult = new Method(this, this, "*", 1);
+    div = new Method(this, this, "/", 1);
 
+    this->addMethod(plus);
+    this->addMethod(minus);
+    this->addMethod(mult);
+    this->addMethod(div);
 }
 
 

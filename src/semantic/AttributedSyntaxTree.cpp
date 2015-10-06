@@ -67,6 +67,7 @@ void EffectiveClass::addField(Field* field)
 void EffectiveClass::addMethod(Method* method)
 {
     methods.push_back(method);
+    classScope.addMethod(method);
 }
 
 
@@ -228,10 +229,17 @@ void BinaryOperationExpression::generateExpressionCode(
     left->generateExpressionCode(code);
     right->generateExpressionCode(code);
 
-    code::Subroutine* s = new code::SubroutineLink(operationMethod->getName());
+    code::Subroutine* s = new code::SubroutineLink(operationMethod->
+            getFullIdentifier());
     
     code::CallInstruction* callInstruction = new code::CallInstruction(s);
     code.push_back(callInstruction);
+}
+
+
+Class* BinaryOperationExpression::getStaticType(void)
+{
+    return operationMethod->getReturnType();
 }
 
 
@@ -249,9 +257,16 @@ void UnaryOperationExpression::generateExpressionCode(
 {
     operand->generateExpressionCode(code);
 
-    code::Subroutine* s = new code::SubroutineLink(operationMethod->getName());
+    code::Subroutine* s = new code::SubroutineLink(operationMethod->
+            getFullIdentifier());
     code::CallInstruction* callInstruction = new code::CallInstruction(s);
     code.push_back(callInstruction);
+}
+
+
+Class* UnaryOperationExpression::getStaticType(void)
+{
+    return operationMethod->getReturnType();
 }
 
 
@@ -317,7 +332,8 @@ CallStatement::CallStatement(Scope* scope, Method* method,
 void CallStatement::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
-    code::Subroutine* sub = new code::SubroutineLink(method->getName());
+    code::Subroutine* sub = new code::SubroutineLink(method->
+            getFullIdentifier());
     code::CallInstruction* ci = new code::CallInstruction(sub);
     code.push_back(ci);
 //    std::cerr << "not yet implemented in file " << __FILE__ << std::endl;
@@ -328,6 +344,12 @@ void CallStatement::generateExpressionCode(
         std::vector<code::StackInstruction*>& code) const
 {
     generateStatementCode(code);
+}
+
+
+Class* CallStatement::getStaticType(void)
+{
+    return method->getReturnType();
 }
 
 
@@ -352,6 +374,12 @@ void Variable::generateExpressionCode(
 }
 
 
+Class* Variable::getStaticType(void)
+{
+    return type;
+}
+
+
 Feature::Feature(Class* wrapper, Class* returnType, const std::string& name) :
     wrapper(wrapper), returnType(returnType), name(name)
 {
@@ -373,6 +401,14 @@ Class* Feature::getReturnType(void)
 const std::string& Feature::getName(void) const
 {
     return name;
+}
+
+
+std::string Feature::getFullIdentifier(void) const
+{
+    if (wrapper == 0)
+        throw "invalid method call (no member class found)";
+    return wrapper->getName() + "::" + name;
 }
 
 

@@ -246,11 +246,19 @@ uetli::semantic::Expression* BinaryOperationExpression::getAttributedExpression(
 {
     semantic::Expression* left = this->left->getAttributedExpression(scope);
     semantic::Expression* right = this->right->getAttributedExpression(scope);
-    semantic::Method* operationMethod = scope->findMethod(this->operatorToken);
 
-    if (operationMethod == 0) {   
-        operationMethod = new semantic::Method(0, 0,
-                this->operatorToken, 2);
+    semantic::EffectiveClass* leftType = dynamic_cast<semantic::EffectiveClass*>
+        (left->getStaticType());
+
+    semantic::Method* operationMethod = leftType->getClassScope()
+        ->findMethod(this->operatorToken);
+
+    if (operationMethod == 0) {
+        std::cerr << "operation " << this->operatorToken <<
+            " not defined" << std::endl;
+        throw "undefined operator!";
+//        operationMethod = new semantic::Method(0, 0,
+//                this->operatorToken, 2);
     }
 
 

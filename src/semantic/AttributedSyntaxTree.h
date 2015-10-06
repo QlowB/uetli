@@ -175,6 +175,8 @@ public:
 
     virtual void generateExpressionCode(
             std::vector<code::StackInstruction*>& code) const = 0;
+
+    virtual Class* getStaticType(void) = 0;
 };
 
 
@@ -187,6 +189,8 @@ public:
 
     virtual void generateExpressionCode(
             std::vector<code::StackInstruction*>& code) const = 0;
+
+    virtual Class* getStaticType(void) = 0;
 };
 
 
@@ -200,6 +204,8 @@ public:
 
     virtual void generateExpressionCode(
             std::vector<code::StackInstruction*>& code) const;
+
+    virtual Class* getStaticType(void);
 };
 
 
@@ -212,6 +218,8 @@ public:
 
     virtual void generateExpressionCode(
             std::vector<code::StackInstruction*>& code) const;
+
+    virtual Class* getStaticType(void);
 };
 
 
@@ -260,6 +268,8 @@ public:
 
     virtual void generateExpressionCode(
             std::vector<code::StackInstruction*>& code) const;
+
+    virtual Class* getStaticType(void);
 };
 
 
@@ -274,6 +284,8 @@ public:
 
     virtual void generateExpressionCode(
             std::vector<code::StackInstruction*>& code) const;
+
+    virtual Class* getStaticType(void);
 };
 
 
@@ -289,6 +301,7 @@ public:
     Class* getWrapper(void);
     Class* getReturnType(void);
     const std::string& getName(void) const;
+    std::string getFullIdentifier(void) const;
 };
 
 

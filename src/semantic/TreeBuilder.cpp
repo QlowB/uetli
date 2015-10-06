@@ -20,6 +20,7 @@
 // =============================================================================
 
 #include "TreeBuilder.h"
+#include "NativeClasses.h"
 #include <iostream>
 #include <vector>
 
@@ -44,6 +45,8 @@ TreeBuilder::~TreeBuilder(void)
 
 void TreeBuilder::build(void)
 {
+    globalScope->addClass(new native::Integer());
+
     typedef std::vector<ClassDeclaration*>::const_iterator CdIter;
     for (CdIter i = declarations.begin(); i != declarations.end(); i++) {
 

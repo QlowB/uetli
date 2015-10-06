@@ -29,13 +29,18 @@ namespace uetli
         {
             class Integer;
         }
+        class Method;
     }
 }
 
 
 
-class uetli::semantic::native::Integer : public Class
+class uetli::semantic::native::Integer : public EffectiveClass
 {
+    Method* plus;
+    Method* minus;
+    Method* mult;
+    Method* div;
 public:
     Integer(void);
 };

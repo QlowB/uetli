@@ -27,7 +27,7 @@
 
 namespace uetli
 {
-    namespace code
+    namespace assembly
     {
         namespace x86_64
         {
@@ -112,37 +112,43 @@ namespace uetli
 
 
 
-class uetli::code::x86_64::Operand
+class uetli::assembly::x86_64::Operand
 {
 public:
     virtual std::string toString(void) const = 0;
 };
 
 
-class uetli::code::x86_64::Source : virtual public Operand
+class uetli::assembly::x86_64::Source : virtual public Operand
 {
 public:
     virtual std::string toString(void) const = 0;
 };
 
 
-class uetli::code::x86_64::Destination : virtual public Operand
+class uetli::assembly::x86_64::Destination : virtual public Operand
 {
 public:
     virtual std::string toString(void) const = 0;
 };
 
 
-class uetli::code::x86_64::RegisterOperand : public Source, public Destination
+class uetli::assembly::x86_64::RegisterOperand :
+        public Source,
+        public Destination
 {
     Register reg;
-
+    RegisterOperand(Register reg);
 public:
+    static const RegisterOperand* getRegisterOperand(Register reg);
+
     virtual std::string toString(void) const;
 };
 
 
-class uetli::code::x86_64::MemoryOperand : public Source, public Destination
+class uetli::assembly::x86_64::MemoryOperand :
+        public Source,
+        public Destination
 {
     Register address;
 
@@ -151,7 +157,9 @@ public:
 };
 
 
-class uetli::code::x86_64::ConstantOperand : public Source, public Destination
+class uetli::assembly::x86_64::ConstantOperand :
+        public Source,
+        public Destination
 {
     unsigned long long value;
 
@@ -160,7 +168,7 @@ public:
 };
 
 
-class uetli::code::x86_64::AssemblyInstruction
+class uetli::assembly::x86_64::AssemblyInstruction
 {
 public:
     virtual ~AssemblyInstruction(void);
@@ -169,27 +177,36 @@ public:
 };
 
 
-class uetli::code::x86_64::SourceDestinationInstruction
+class uetli::assembly::x86_64::SourceDestinationInstruction :
+        public AssemblyInstruction
 {
-    Source* source;
-    Destination* destionation;
+    const Source* source;
+    const Destination* destionation;
 
 public:
+    SourceDestinationInstruction(const Source* source,
+                                 const Destination* destionation);
+
     virtual std::string toString(void) const;
+
     virtual const std::string& getInstruction(void) const = 0;
 };
 
 
-class uetli::code::x86_64::Mov : public SourceDestinationInstruction
+class uetli::assembly::x86_64::Mov : public SourceDestinationInstruction
 {
 public:
+    Mov(const Source* source,
+        const Destination* destionation);
     virtual const std::string& getInstruction(void) const;
 };
 
 
-class uetli::code::x86_64::Add : public SourceDestinationInstruction
+class uetli::assembly::x86_64::Add : public SourceDestinationInstruction
 {
 public:
+    Add(const Source* source,
+        const Destination* destionation);
     virtual const std::string& getInstruction(void) const;
 };
 

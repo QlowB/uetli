@@ -256,11 +256,12 @@ public:
 
 class uetli::semantic::CallStatement : public Statement, public Expression
 {
+    Expression* target;
     Method* method;
     std::vector<Expression*> arguments;
 
 public:
-    CallStatement(Scope* scope, Method* method,
+    CallStatement(Scope* scope, Expression* target, Method* method,
                   const std::vector<Expression*> arguments);
 
     virtual void generateStatementCode(

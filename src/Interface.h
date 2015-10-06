@@ -31,7 +31,7 @@
 namespace uetli
 {
     class ConsoleInterface;
-    
+
     class UetliConsoleInterface;
 }
 

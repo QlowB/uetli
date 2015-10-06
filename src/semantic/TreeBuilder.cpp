@@ -47,6 +47,8 @@ void TreeBuilder::build(void)
 {
     globalScope->addClass(new native::Integer());
 
+    //std::cout << "Initialized native classes!\n";
+
     typedef std::vector<ClassDeclaration*>::const_iterator CdIter;
     for (CdIter i = declarations.begin(); i != declarations.end(); i++) {
 
@@ -59,6 +61,8 @@ void TreeBuilder::build(void)
         classesByName.put((*i)->name, ec);
         
     }
+
+    //std::cout << "created classes!\n";
 
     typedef std::vector<EffectiveClass*>::iterator PcIter;
 

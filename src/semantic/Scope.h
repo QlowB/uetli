@@ -34,6 +34,7 @@ namespace uetli
     {
         class Scope;
 
+
         class Method;
         class Class;
         class Variable;
@@ -49,6 +50,9 @@ class uetli::semantic::Scope
     Scope* parentScope;
 
     std::vector<Scope*> childrenScopes;
+
+    /// defines if the scope contains a "this" variable
+    bool containsThis;
 
     /// holds variables in the order they were defined
     std::vector<Variable*> variables;
@@ -66,6 +70,9 @@ public:
     ~Scope(void);
 
     void setParentScope(Scope* parentScope);
+
+    void setContainsThis(bool containsThis);
+    bool getContainsThis(void) const;
 
 protected:
     void addChildScope(Scope* childScope);
@@ -85,6 +92,8 @@ public:
     /// \return the index of this variable if counted from top of the stack
     ///
     size_t getStackIndex(const Variable* variable) const;
+
+    size_t getStackIndexOfThis(void) const;
 
     void addMethod(Method* variable);
     void addClass(Class* variable);

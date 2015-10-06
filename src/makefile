@@ -1,9 +1,9 @@
 CXX := clang++
 CXXFLAGS := -g
-LINKFLAGS := -Lparser/ -luetli_parser -Lsemantic -luetli_semantic -Lutil -luetli_util -Lcode -luetli_code
+LINKFLAGS := -Lparser/ -luetli_parser -Lsemantic -luetli_semantic -Lutil -luetli_util -Lcode -luetli_code -Lassembly -luetli_assembly
 
 OBJECTS := main.o Interface.o
-LIBRARIES := parser/libuetli_parser.a semantic/libuetli_semantic.a util/libuetli_util.a code/libuetli_code.a
+LIBRARIES := parser/libuetli_parser.a semantic/libuetli_semantic.a util/libuetli_util.a code/libuetli_code.a assembly/libuetli_assembly.a
 EXECUTABLE := uetli
 
 
@@ -23,9 +23,13 @@ parser/libuetli_parser.a:
 semantic/libuetli_semantic.a:
 	cd semantic && $(MAKE)
 
-.PHONY: util/libuetli_code.a
+.PHONY: code/libuetli_code.a
 code/libuetli_code.a:
 	cd code && $(MAKE)
+
+.PHONY: assembly/libuetli_assembly.a
+assembly/libuetli_assembly.a:
+	cd assembly && $(MAKE)
 
 .PHONY: util/libuetli_util.a
 util/libuetli_util.a:
@@ -33,6 +37,6 @@ util/libuetli_util.a:
 
 .PHONY: clear
 clear:
-	rm -f *.o *.a parser/*.o parser/*.a semantic/*.o semantic/*.a code/*.o code/*.a util/*.o uetli/*.a
+	rm -f *.o *.a parser/*.o parser/*.a semantic/*.o semantic/*.a code/*.o code/*.a util/*.o uetli/*.a assembly/*.o assembly/*.a
 
 

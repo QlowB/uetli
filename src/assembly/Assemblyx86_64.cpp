@@ -22,7 +22,7 @@
 #include "Assemblyx86_64.h"
 #include <sstream>
 
-using namespace uetli::code::x86_64;
+using namespace uetli::assembly::x86_64;
 
 std::string registerNames[] = {
     "rax",
@@ -80,10 +80,30 @@ std::string registerNames[] = {
     "rip"
 };
 
+namespace uetli {
+namespace assembly {
+namespace x86_64 {
 
 const std::string& getRegisterName(Register reg)
 {
     return registerNames[reg];
+}
+
+}
+}
+}
+
+
+RegisterOperand::RegisterOperand(Register reg) :
+    reg(reg)
+{
+}
+
+
+const RegisterOperand* RegisterOperand::getRegisterOperand(Register reg)
+{
+    // TODO implement this more efficiently
+    return new RegisterOperand(reg);
 }
 
 
@@ -112,6 +132,15 @@ AssemblyInstruction::~AssemblyInstruction(void)
 }
 
 
+SourceDestinationInstruction::SourceDestinationInstruction(
+        const Source* source,
+        const Destination* destionation) :
+    source(source),
+    destionation(destionation)
+{
+}
+
+
 std::string SourceDestinationInstruction::toString(void) const
 {
     return getInstruction() + " " +
@@ -119,10 +148,24 @@ std::string SourceDestinationInstruction::toString(void) const
 }
 
 
+Mov::Mov(const Source* source,
+         const Destination* destionation) :
+    SourceDestinationInstruction(source, destionation)
+{
+}
+
+
 const std::string& Mov::getInstruction(void) const
 {
     static std::string inst = "mov";
     return inst;
+}
+
+
+Add::Add(const Source* source,
+         const Destination* destionation) :
+    SourceDestinationInstruction(source, destionation)
+{
 }
 
 

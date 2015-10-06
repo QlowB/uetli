@@ -320,11 +320,11 @@ void AssignmentStatement::generateStatementCode(
 }
 
 
-CallStatement::CallStatement(Scope* scope, Method* method,
+CallStatement::CallStatement(Scope* scope, Expression* target, Method* method,
                              const std::vector<Expression*> arguments) :
     LanguageObject(scope),
     Statement(scope), Expression(scope),
-    method(method), arguments(arguments)
+    target(target), method(method), arguments(arguments)
 {
 }
 
@@ -332,18 +332,32 @@ CallStatement::CallStatement(Scope* scope, Method* method,
 void CallStatement::generateStatementCode(
         std::vector<code::StackInstruction*>& code) const
 {
-    code::Subroutine* sub = new code::SubroutineLink(method->
-            getFullIdentifier());
-    code::CallInstruction* ci = new code::CallInstruction(sub);
-    code.push_back(ci);
-//    std::cerr << "not yet implemented in file " << __FILE__ << std::endl;
+    generateExpressionCode(code);
+    code.push_back(new code::PopInstruction());
 }
 
 
 void CallStatement::generateExpressionCode(
         std::vector<code::StackInstruction*>& code) const
 {
-    generateStatementCode(code);
+    // if function is not called on any target
+    if (target == 0) {
+        code.push_back (new code::LoadInstruction (
+            scope->getStackIndexOfThis()
+        ));
+    }
+    else {
+        target->generateExpressionCode(code);
+    }
+
+    for (size_t i = 0; i < arguments.size(); i++) {
+        arguments[i]->generateExpressionCode(code);
+    }
+
+    code::Subroutine* sub = new code::SubroutineLink(method->
+            getFullIdentifier());
+    code::CallInstruction* ci = new code::CallInstruction(sub);
+    code.push_back(ci);
 }
 
 
@@ -423,6 +437,7 @@ Method::Method(Class* wrapper, Class* returnType, const std::string& name,
     Feature(wrapper, returnType, name),
     argumentCount(argumentCount), content(&methodScope)
 {
+    methodScope.setContainsThis(true);
 }
 
 

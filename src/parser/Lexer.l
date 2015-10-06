@@ -48,11 +48,12 @@ extern "C" int yywrap()
 ":"                     return SET_TOKEN(COLON);
 ","                     return SET_TOKEN(COMMA);
 ":="                    return SET_TOKEN(ASSIGN);
+"."                     return SET_TOKEN(DOT);
 
-"+"		             	return SET_TOKEN(PLUS);
-"-"		             	return SET_TOKEN(MINUS);
-"*"		             	return SET_TOKEN(ASTERISK);
-"/"		             	return SET_TOKEN(SLASH);
+"+"		        return SET_TOKEN(PLUS);
+"-"		        return SET_TOKEN(MINUS);
+"*"		        return SET_TOKEN(ASTERISK);
+"/"		        return SET_TOKEN(SLASH);
 
 "("                     return SET_TOKEN(ROUND_LEFT);
 ")"                     return SET_TOKEN(ROUND_RIGHT);

@@ -201,14 +201,31 @@ struct uetli::parser::Expression : virtual public ParseObject
 ///        statement or an expression returning a value. It can also represent
 ///        a variable identifier.
 ///
-struct uetli::parser::CallOrVariableStatement : virtual public Statement,
-virtual public Expression
+///
+/// Since the Uniform Access Principle makes method calls and variable accesses
+/// look the same, it is not possible to determine if an expression is a
+/// variable access or a function call during the parsing process.
+/// This results in this ambiguous data structure which is created by
+/// the parser. This finally becomes clear during semantic analysis (building
+/// the attributed syntax tree).
+///
+struct uetli::parser::CallOrVariableStatement :
+        virtual public Statement,
+        virtual public Expression
 {
+    /// the name of the called method or the accessed variable
     std::string methodName;
+
+    /// the target expression (e.g. in the case of
+    /// <code>var.methodName(5)</code>, <code>var</code> is the target)
+    Expression* target;
+
+    /// the arguments which are specified to the call (is always empty for a
+    /// variable access)
     std::vector<Expression*> arguments;
 
-    CallOrVariableStatement(const std::string& methodName);
-    CallOrVariableStatement(const std::string& methodName,
+    CallOrVariableStatement(Expression* target, const std::string& methodName);
+    CallOrVariableStatement(Expression* target, const std::string& methodName,
                   const std::vector<Expression*>& arguments);
 
     virtual uetli::semantic::Expression* getAttributedExpression(

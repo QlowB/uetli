@@ -24,6 +24,7 @@
 #include "parser/uetli_parser.h"
 #include "semantic/TreeBuilder.h"
 #include "code/StackCodeGenerator.h"
+#include "assembly/AssemblyGenerator.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -89,7 +90,7 @@ int UetliConsoleInterface::run(void)
     ::uetli_parser_in = in;                                              
     ::uetli_parser_error_out = error;
    
-    bool log = true; 
+    bool log = true;
 
 
     if (log) {
@@ -109,7 +110,7 @@ int UetliConsoleInterface::run(void)
     openedFiles.clear(); 
 
     if (parsedClasses == 0) {
-        fprintf(out, "Aborting Compilation\n");;
+        fprintf(out, "Aborting Compilation\n");
         return 1;
     }
 
@@ -125,6 +126,7 @@ int UetliConsoleInterface::run(void)
     for (size_t i = 0; i < parsedClasses->size(); i++) {
         delete parsedClasses->at(i);
     }
+
     delete parsedClasses;
     parsedClasses = 0;
 
@@ -137,8 +139,7 @@ int UetliConsoleInterface::run(void)
         fprintf(out, "Parsed at least one class: %s\n", cl->getName().c_str());
         fprintf(out, "%s has %ld methods.\n", cl->getName().c_str(),
                 cl->getNMethods());
-        
-        ;
+
         if (cl->getNMethods() != 0) {
             fprintf(out, "Parsed at least one method: %s\n", cl->getMethod(0)->
                     getName().c_str());
@@ -146,17 +147,26 @@ int UetliConsoleInterface::run(void)
             scg.generateCode();
 
             uetli::code::DirectSubroutine* rout = scg.getGeneratedCode();
-            fprintf(out, "stack instruction dump:\n%s",
+            fprintf(out, "stack instruction dump:\n%s\n",
                     rout->toString().c_str());
             /*for (int i = 0; i < rout->instructions.size(); i++) {
                 fprintf(out, "instruction: %s\n", uetli::code::getDescription(
                              rout->instructions[i]).c_str());
             }*/
+
+            uetli::assembly::AssemblyGenerator ag(rout);
+            ag.generateAssembly();
+
+            fprintf(out, "\n\nprinting assembly:\n");
+            for (size_t i = 0; i < ag.getInstructions().size(); i++) {
+                fprintf(out, "%s\n",
+                        ag.getInstructions()[i]->toString().c_str());
+            }
         }
     }
 
 
-    fprintf(out, "Parsed %ld classes\n", classes.size());
+    fprintf(out, "Parsed %d classes\n", (int) classes.size());
 
     return 0;
 }

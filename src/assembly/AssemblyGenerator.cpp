@@ -22,9 +22,30 @@
 
 #include "AssemblyGenerator.h"
 
-using namespace uetli::code;
+using namespace uetli::assembly;
 
 
-AssemblyGenerator::AssemblyGenerator(void)
+AssemblyGenerator::AssemblyGenerator(
+        const code::DirectSubroutine* subroutine) :
+    subroutine(subroutine)
 {
 }
+
+
+void AssemblyGenerator::generateAssembly(void)
+{
+    instructions.push_back (
+        new x86_64::Add (
+            x86_64::RegisterOperand::getRegisterOperand(x86_64::RAX),
+            x86_64::RegisterOperand::getRegisterOperand(x86_64::RAX)
+        )
+    );
+}
+
+
+const std::vector<x86_64::AssemblyInstruction*>&
+    AssemblyGenerator::getInstructions(void) const
+{
+    return instructions;
+}
+

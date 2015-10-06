@@ -89,7 +89,7 @@ std::vector<uetli::parser::ClassDeclaration*>* parsedClasses = 0;
 %token <string> IDENTIFIER
 %token <token> CLASS DO END
 %token <token> NEW_LINE
-%token <token> COLON COMMA ASSIGN OPERATOR
+%token <token> COLON COMMA DOT ASSIGN OPERATOR
 %token <token> ROUND_LEFT ROUND_RIGHT
 
 %type <token> pnl;
@@ -270,13 +270,23 @@ statement:
 
 callOrVariableStatement:
     IDENTIFIER {
-        $$ = new CallOrVariableStatement(*$1);
+        $$ = new CallOrVariableStatement(0, *$1);
         delete $1; $1 = 0;
     }
     |
     IDENTIFIER ROUND_LEFT expressionList ROUND_RIGHT {
-        $$ = new CallOrVariableStatement(*$1, *$3);
+        $$ = new CallOrVariableStatement(0, *$1, *$3);
         delete $1; delete $3; $1 = 0; $3 = 0;
+    }
+    |
+    expression DOT IDENTIFIER {
+        $$ = new CallOrVariableStatement($1, *$3);
+        delete $3; $3 = 0;
+    }
+    |
+    expression DOT IDENTIFIER ROUND_LEFT expressionList ROUND_RIGHT {
+        $$ = new CallOrVariableStatement($1, *$3, *$5);
+        delete $3; $3 = 0; delete $5; $5 = 0;
     };
 
 

@@ -28,7 +28,8 @@ using namespace uetli::semantic;
 
 
 Scope::Scope(void) :
-parentScope(0)
+        parentScope(0),
+        containsThis(false)
 {
 }
 
@@ -47,6 +48,18 @@ void Scope::setParentScope(Scope* parentScope)
 {
     this->parentScope = parentScope;
     parentScope->addChildScope(this);
+}
+
+
+void Scope::setContainsThis(bool containsThis)
+{
+    this->containsThis = containsThis;
+}
+
+
+bool Scope::getContainsThis(void) const
+{
+    return containsThis;
 }
 
 
@@ -100,13 +113,22 @@ Variable* Scope::findVariable(const std::string& name)
 
 size_t Scope::getVariableCount(void) const
 {
-    return variables.size();
+    return variables.size() + (containsThis ? 1 : 0);
 }
 
 
 size_t Scope::getStackIndex(const Variable* variable) const
 {
     return getVariableCount() - 1 - variableIndices.get(variable);
+}
+
+
+size_t Scope::getStackIndexOfThis(void) const
+{
+    if (!containsThis)
+        throw "not a static functions";
+
+    return getVariableCount() - 2;
 }
  
 

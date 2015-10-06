@@ -178,15 +178,17 @@ Expression::~Expression(void)
 
 
 CallOrVariableStatement::CallOrVariableStatement
-    (const std::string& methodName) :
-    methodName(methodName)
+    (Expression* target, const std::string& methodName) :
+    methodName(methodName), target(target)
 {
 }
 
 
-CallOrVariableStatement::CallOrVariableStatement(const std::string& methodName,
-                             const std::vector<Expression*>& arguments) :
-    methodName(methodName), arguments(arguments)
+CallOrVariableStatement::CallOrVariableStatement(
+        Expression* target,
+        const std::string& methodName,
+        const std::vector<Expression*>& arguments) :
+    methodName(methodName), target(target), arguments(arguments)
 {
 }
 
@@ -208,7 +210,13 @@ uetli::semantic::Expression* CallOrVariableStatement::getAttributedExpression(
                         this->arguments[i]->getAttributedExpression(scope));
         }
 
-        return new semantic::CallStatement(scope, toCall, arguments);
+        semantic::Expression* target = 0;
+
+        if (this->target != 0) {
+            target = this->target->getAttributedExpression(scope);
+        }
+
+        return new semantic::CallStatement(scope, target, toCall, arguments);
     }
 
     semantic::Variable* toExpress = scope->findVariable(methodName);

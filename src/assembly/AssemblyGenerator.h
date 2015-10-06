@@ -23,20 +23,32 @@
 #ifndef UETLI_CODE_ASSEMBLYGENERATOR_H_
 #define UETLI_CODE_ASSEMBLYGENERATOR_H_
 
+#include <vector>
+
+#include "Assemblyx86_64.h"
+
+#include "../code/StackMachine.h"
 
 namespace uetli
 {
-    namespace code
+    namespace assembly
     {
         class AssemblyGenerator;
     }
 }
 
 
-class uetli::code::AssemblyGenerator
+class uetli::assembly::AssemblyGenerator
 {
+    const uetli::code::DirectSubroutine* subroutine;
+    std::vector<x86_64::AssemblyInstruction*> instructions;
 public:
-    AssemblyGenerator(void);
+    AssemblyGenerator(const uetli::code::DirectSubroutine* subroutine);
+
+    void generateAssembly(void);
+
+    const std::vector<x86_64::AssemblyInstruction*>&
+        getInstructions(void) const;
 };
 
 

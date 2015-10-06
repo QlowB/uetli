@@ -3,8 +3,8 @@ CXXFLAGS := -fPIC -g
 
 AR := ar
 
-OBJECTS := StackMachine.o StackCodeGenerator.o
-LIBRARY := libuetli_code.a
+OBJECTS := AssemblyGenerator.o Assemblyx86_64.o
+LIBRARY := libuetli_assembly.a
 
 
 $(LIBRARY): $(OBJECTS)

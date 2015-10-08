@@ -194,6 +194,7 @@ public:
                          std::vector<void*>& variableStack) const;
     
     virtual std::string toString(void) const;
+    virtual const Subroutine* getSubroutine(void) const;
 };
 
 
@@ -262,9 +263,11 @@ class uetli::code::Subroutine
 {
 protected:
     std::string name;
+    size_t argumentCount;
 public:
-    Subroutine(const std::string& name);
+    Subroutine(const std::string& name, size_t argumentCount);
     const std::string& getName(void) const;
+    size_t getArgumentCount(void) const;
 
     virtual ~Subroutine(void);
 };
@@ -273,7 +276,7 @@ public:
 class uetli::code::SubroutineLink : public Subroutine
 {
 public:
-    SubroutineLink(const std::string& name);
+    SubroutineLink(const std::string& name, size_t argumentCount);
 };
 
 
@@ -286,7 +289,8 @@ protected:
     std::vector<StackInstruction*> instructions;
 
 public:
-    DirectSubroutine(Word localVariableCount, const std::string& name);
+    DirectSubroutine(Word localVariableCount, const std::string& name,
+                     size_t argumentCount);
 
     virtual void execute(std::vector<void*>& stack, std::vector<void*>&) const;
 
@@ -294,6 +298,7 @@ public:
 
     void addInstruction(StackInstruction* instruction);
     std::vector<StackInstruction*>& getInstructions(void);
+    const std::vector<StackInstruction*>& getInstructions(void) const;
 
     Word getLocalVariableCount(void) const;
     void setLocalVariableCount(Word newCount);

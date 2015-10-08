@@ -230,7 +230,7 @@ void BinaryOperationExpression::generateExpressionCode(
     right->generateExpressionCode(code);
 
     code::Subroutine* s = new code::SubroutineLink(operationMethod->
-            getFullIdentifier());
+            getFullIdentifier(), operationMethod->getArgumentCount());
     
     code::CallInstruction* callInstruction = new code::CallInstruction(s);
     code.push_back(callInstruction);
@@ -258,7 +258,7 @@ void UnaryOperationExpression::generateExpressionCode(
     operand->generateExpressionCode(code);
 
     code::Subroutine* s = new code::SubroutineLink(operationMethod->
-            getFullIdentifier());
+            getFullIdentifier(), operationMethod->getArgumentCount());
     code::CallInstruction* callInstruction = new code::CallInstruction(s);
     code.push_back(callInstruction);
 }
@@ -355,7 +355,7 @@ void CallStatement::generateExpressionCode(
     }
 
     code::Subroutine* sub = new code::SubroutineLink(method->
-            getFullIdentifier());
+            getFullIdentifier(), method->getArgumentCount());
     code::CallInstruction* ci = new code::CallInstruction(sub);
     code.push_back(ci);
 }
@@ -462,5 +462,11 @@ const StatementBlock& Method::getContent(void) const
 unsigned int Method::getArgumentCount(void) const
 {
     return argumentCount;
+}
+
+
+unsigned int Method::getActualArgumentCount(void) const
+{
+    return argumentCount + 1;
 }
 

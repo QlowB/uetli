@@ -163,6 +163,12 @@ std::string CallInstruction::toString(void) const
 }
 
 
+const Subroutine* CallInstruction::getSubroutine(void) const
+{
+    return subroutine;
+}
+
+
 LoadConstantInstruction::LoadConstantInstruction(Word constant) :
     constant(constant)
 {
@@ -236,8 +242,8 @@ std::string PrintInstruction::toString(void) const
 }
 
 
-Subroutine::Subroutine(const std::string& name) :
-    name(name)
+Subroutine::Subroutine(const std::string& name, size_t argumentCount) :
+    name(name), argumentCount(argumentCount)
 {
 }
 
@@ -253,14 +259,22 @@ const std::string& Subroutine::getName(void) const
 }
 
 
-SubroutineLink::SubroutineLink(const std::string& name) :
-    Subroutine(name)
+size_t Subroutine::getArgumentCount(void) const
+{
+    return argumentCount;
+}
+
+
+SubroutineLink::SubroutineLink(const std::string& name, size_t argumentCount) :
+    Subroutine(name, argumentCount)
 {
 }
 
 
-DirectSubroutine::DirectSubroutine(Word localVariableCount, const std::string& name) :
-    Subroutine(name),
+DirectSubroutine::DirectSubroutine(Word localVariableCount,
+                                   const std::string& name,
+                                   size_t argumentCount) :
+    Subroutine(name, argumentCount),
     localVariableCount(localVariableCount)
 {
 }
@@ -286,7 +300,7 @@ void DirectSubroutine::execute(std::vector<void*>& stack,
 std::string DirectSubroutine::toString(void) const
 {
     std::stringstream str;
-    str << "sub # start of subroutine"
+    str << "sub " << name << "(" << argumentCount << ") # start of subroutine"
         << std::endl;
 
     typedef std::vector<StackInstruction*>::const_iterator InstructionIterator;
@@ -304,6 +318,13 @@ std::string DirectSubroutine::toString(void) const
 void DirectSubroutine::addInstruction(StackInstruction* instruction)
 {
     this->instructions.push_back(instruction);
+}
+
+
+const std::vector<StackInstruction*>&
+    DirectSubroutine::getInstructions(void) const
+{
+    return instructions;
 }
 
 

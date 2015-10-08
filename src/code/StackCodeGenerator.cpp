@@ -28,7 +28,7 @@ StackCodeGenerator::StackCodeGenerator(const semantic::Method* method) :
     method(method)
 {
     output = new DirectSubroutine(method->getContent().getLocalVariableCount(),
-            method->getName());
+            method->getFullIdentifier(), method->getActualArgumentCount());
 }
 
 

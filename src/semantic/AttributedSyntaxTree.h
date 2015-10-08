@@ -328,6 +328,7 @@ public:
     const StatementBlock& getContent(void) const;
 
     unsigned int getArgumentCount(void) const;
+    unsigned int getActualArgumentCount(void) const;
 };
 
 #endif // UETLI_SEMANTIC_ATTRIBUTEDSYNTAXTREE_H_

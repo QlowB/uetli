@@ -126,9 +126,9 @@ size_t Scope::getStackIndex(const Variable* variable) const
 size_t Scope::getStackIndexOfThis(void) const
 {
     if (!containsThis)
-        throw "not a static functions";
+        throw "\"this\" used in static function";
 
-    return getVariableCount() - 2;
+    return getVariableCount();
 }
  
 

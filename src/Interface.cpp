@@ -134,6 +134,45 @@ int UetliConsoleInterface::run(void)
     const std::vector<uetli::semantic::EffectiveClass*>& classes =
             tb.getAttributedClasses();
 
+    std::vector<uetli::code::DirectSubroutine*> subroutines;
+
+    for (size_t i = 0; i < classes.size();  i++) {
+        uetli::semantic::EffectiveClass* cl = classes[i];
+
+        for (size_t j = 0; j < cl->getNMethods(); j++) {
+            uetli::semantic::Method* method = cl->getMethod(j);
+
+            uetli::code::StackCodeGenerator scg(method);
+            scg.generateCode();
+
+            uetli::code::DirectSubroutine* rout = scg.getGeneratedCode();
+
+            subroutines.push_back(rout);
+        }
+    }
+    
+
+    FILE* output = 0;
+    
+    if (outputFilename != "")
+        output = ::fopen(outputFilename.c_str(), "w");
+
+    if (!output) {
+        for (size_t i = 0; i < subroutines.size(); i++) {
+            fprintf(out, "%s\n", subroutines[i]->toString().c_str());
+        }
+
+    }
+    else {
+        for (size_t i = 0; i < subroutines.size(); i++) {
+            fprintf(output, "%s\n", subroutines[i]->toString().c_str());
+        }
+        ::fclose(output);
+    }
+
+
+
+#if 0
     if (classes.size() > 0) {
         uetli::semantic::EffectiveClass* cl = classes[0];
         fprintf(out, "Parsed at least one class: %s\n", cl->getName().c_str());
@@ -143,28 +182,39 @@ int UetliConsoleInterface::run(void)
         if (cl->getNMethods() != 0) {
             fprintf(out, "Parsed at least one method: %s\n", cl->getMethod(0)->
                     getName().c_str());
+
             uetli::code::StackCodeGenerator scg(cl->getMethod(0));
             scg.generateCode();
 
             uetli::code::DirectSubroutine* rout = scg.getGeneratedCode();
-            fprintf(out, "stack instruction dump:\n%s\n",
-                    rout->toString().c_str());
+//            fprintf(out, "stack instruction dump:\n%s\n",
+//                    rout->toString().c_str());
+
+            FILE* output = 0;
+            if (outputFilename != "")
+                output = ::fopen(outputFilename.c_str(), "w");
+            if (!output)
+                fprintf(out, "%s\n", rout->toString().c_str());
+            else {
+                fprintf(output, "%s\n", rout->toString().c_str());
+                ::fclose(output);
+            }
+
+
+
+
             /*for (int i = 0; i < rout->instructions.size(); i++) {
                 fprintf(out, "instruction: %s\n", uetli::code::getDescription(
                              rout->instructions[i]).c_str());
             }*/
 
-            uetli::assembly::AssemblyGenerator ag(rout);
-            ag.generateAssembly();
+//            uetli::assembly::AssemblyGenerator ag;
+//            ag.generateAssembly(rout);
 
-            fprintf(out, "\n\nprinting assembly:\n");
-            for (size_t i = 0; i < ag.getInstructions().size(); i++) {
-                fprintf(out, "%s\n",
-                        ag.getInstructions()[i]->toString().c_str());
-            }
+//            ag.assemble("obj.o");
         }
     }
-
+#endif
 
     fprintf(out, "Parsed %d classes\n", (int) classes.size());
 

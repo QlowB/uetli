@@ -132,6 +132,19 @@ AssemblyInstruction::~AssemblyInstruction(void)
 }
 
 
+CallInstruction::CallInstruction(const std::string& labelName) :
+    labelName(labelName)
+{
+}
+
+
+const std::string& CallInstruction::getLabelName(void) const
+{
+    return labelName;
+}
+
+
+
 SourceDestinationInstruction::SourceDestinationInstruction(
         const Source* source,
         const Destination* destionation) :

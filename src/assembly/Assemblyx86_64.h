@@ -103,6 +103,7 @@ namespace uetli
             struct ConstantOperand;
 
             struct AssemblyInstruction;
+                struct CallInstruction;
                 struct SourceDestinationInstruction;
                     struct Mov;
                     struct Add;
@@ -174,6 +175,16 @@ public:
     virtual ~AssemblyInstruction(void);
 
     virtual std::string toString(void) const = 0;
+};
+
+
+class uetli::assembly::x86_64::CallInstruction : public AssemblyInstruction
+{
+    std::string labelName;
+public:
+    CallInstruction(const std::string& labelName);
+    const std::string& getLabelName(void) const;
+
 };
 
 

@@ -24,31 +24,46 @@
 #define UETLI_CODE_ASSEMBLYGENERATOR_H_
 
 #include <vector>
+#include <string>
 
 #include "Assemblyx86_64.h"
 
 #include "../code/StackMachine.h"
+#include "../util/HashMap.h"
 
 namespace uetli
 {
     namespace assembly
     {
+        class AssemblySubroutine;
         class AssemblyGenerator;
     }
 }
 
 
-class uetli::assembly::AssemblyGenerator
+class uetli::assembly::AssemblySubroutine
 {
-    const uetli::code::DirectSubroutine* subroutine;
     std::vector<x86_64::AssemblyInstruction*> instructions;
 public:
-    AssemblyGenerator(const uetli::code::DirectSubroutine* subroutine);
 
-    void generateAssembly(void);
+    AssemblySubroutine(const uetli::code::DirectSubroutine* subroutine);
+    std::string toString(void) const;
+private:
+    void generate(const uetli::code::DirectSubroutine* subroutine);
+    void generateInstruction(const uetli::code::StackInstruction* inst);
+};
 
-    const std::vector<x86_64::AssemblyInstruction*>&
-        getInstructions(void) const;
+
+class uetli::assembly::AssemblyGenerator
+{
+    std::vector<AssemblySubroutine*> subroutines;
+    std::string assemblerCmd;
+public:
+    AssemblyGenerator(void);
+
+    void generateAssembly(const uetli::code::DirectSubroutine* subroutine);
+
+    void assemble(const std::string& outputPath) const;
 };
 
 

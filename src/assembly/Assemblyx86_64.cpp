@@ -127,12 +127,50 @@ std::string ConstantOperand::toString(void) const
 }
 
 
+AssemblyInstruction::AssemblyInstruction(const std::string& instruction) :
+    instruction(instruction)
+{
+}
+
+
 AssemblyInstruction::~AssemblyInstruction(void)
 {
 }
 
 
+std::string AssemblyInstruction::toString(void) const
+{
+    return instruction;
+}
+
+
+SingleRegisterInstruction::SingleRegisterInstruction(
+        const std::string& instruction, const RegisterOperand* reg) :
+    AssemblyInstruction(instruction), reg(reg)
+{
+}
+
+
+std::string SingleRegisterInstruction::toString(void) const
+{
+    return instruction + " " + reg->toString();
+}
+
+
+Push::Push(const RegisterOperand* reg) :
+    SingleRegisterInstruction("push", reg)
+{
+}
+
+
+Pop::Pop(const RegisterOperand* reg) :
+    SingleRegisterInstruction("pop", reg)
+{
+}
+
+
 CallInstruction::CallInstruction(const std::string& labelName) :
+    AssemblyInstruction("call"),
     labelName(labelName)
 {
 }
@@ -144,10 +182,11 @@ const std::string& CallInstruction::getLabelName(void) const
 }
 
 
-
 SourceDestinationInstruction::SourceDestinationInstruction(
+        const std::string& instruction,
         const Source* source,
         const Destination* destionation) :
+    AssemblyInstruction(instruction),
     source(source),
     destionation(destionation)
 {
@@ -156,35 +195,22 @@ SourceDestinationInstruction::SourceDestinationInstruction(
 
 std::string SourceDestinationInstruction::toString(void) const
 {
-    return getInstruction() + " " +
+    return instruction + " " +
             destionation->toString() + ", " + source->toString();
 }
 
 
 Mov::Mov(const Source* source,
          const Destination* destionation) :
-    SourceDestinationInstruction(source, destionation)
+    SourceDestinationInstruction("mov", source, destionation)
 {
-}
-
-
-const std::string& Mov::getInstruction(void) const
-{
-    static std::string inst = "mov";
-    return inst;
 }
 
 
 Add::Add(const Source* source,
          const Destination* destionation) :
-    SourceDestinationInstruction(source, destionation)
+    SourceDestinationInstruction("add", source, destionation)
 {
 }
 
-
-const std::string& Add::getInstruction(void) const
-{
-    static std::string inst = "add";
-    return inst;
-}
 

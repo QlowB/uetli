@@ -102,11 +102,14 @@ namespace uetli
             struct MemoryOperand;
             struct ConstantOperand;
 
-            struct AssemblyInstruction;
-                struct CallInstruction;
-                struct SourceDestinationInstruction;
-                    struct Mov;
-                    struct Add;
+            class AssemblyInstruction;
+                class SingleRegisterInstruction;
+                    class Push;
+                    class Pop;
+                class CallInstruction;
+                class SourceDestinationInstruction;
+                    class Mov;
+                    class Add;
         }
     }
 }
@@ -171,10 +174,42 @@ public:
 
 class uetli::assembly::x86_64::AssemblyInstruction
 {
+protected:
+    std::string instruction;
 public:
+    AssemblyInstruction(const std::string& instruction);
     virtual ~AssemblyInstruction(void);
 
-    virtual std::string toString(void) const = 0;
+    virtual std::string toString(void) const;
+};
+
+
+class uetli::assembly::x86_64::SingleRegisterInstruction :
+        public AssemblyInstruction
+{
+protected:
+    const RegisterOperand* reg;
+public:
+    SingleRegisterInstruction(const std::string& instruction,
+            const RegisterOperand* reg);
+
+    virtual std::string toString(void) const;
+};
+
+
+class uetli::assembly::x86_64::Push :
+        public SingleRegisterInstruction
+{
+public:
+    Push(const RegisterOperand* reg);
+};
+
+
+class uetli::assembly::x86_64::Pop :
+        public SingleRegisterInstruction
+{
+public:
+    Pop(const RegisterOperand* reg);
 };
 
 
@@ -195,12 +230,12 @@ class uetli::assembly::x86_64::SourceDestinationInstruction :
     const Destination* destionation;
 
 public:
-    SourceDestinationInstruction(const Source* source,
+    SourceDestinationInstruction(const std::string& instruction,
+                                 const Source* source,
                                  const Destination* destionation);
 
     virtual std::string toString(void) const;
 
-    virtual const std::string& getInstruction(void) const = 0;
 };
 
 
@@ -209,7 +244,6 @@ class uetli::assembly::x86_64::Mov : public SourceDestinationInstruction
 public:
     Mov(const Source* source,
         const Destination* destionation);
-    virtual const std::string& getInstruction(void) const;
 };
 
 
@@ -218,7 +252,6 @@ class uetli::assembly::x86_64::Add : public SourceDestinationInstruction
 public:
     Add(const Source* source,
         const Destination* destionation);
-    virtual const std::string& getInstruction(void) const;
 };
 
 

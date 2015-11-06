@@ -36,17 +36,7 @@ int main(int argc, char** argv)
 
     interface = new UetliConsoleInterface(argc, argv);
 
-    try {
-        returnValue = interface->run();
-    }
-    catch (const char* err) {
-        std::cerr << "compilation terminated: " << err << "\n";
-        returnValue = 1;
-    }
-    catch (...) {
-        std::cerr << "compilation terminated!\n";
-        returnValue = 1;
-    }
+    returnValue = interface->run();
 
     delete interface;
     interface = 0;

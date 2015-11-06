@@ -25,6 +25,8 @@
 #include <vector>
 #include <string>
 
+#include "../parser/Identifier.h"
+
 namespace uetli
 {
     namespace code
@@ -101,7 +103,14 @@ public:
 
     virtual void execute(std::vector<void*>& stack,
                          std::vector<void*>& variableStack) const;
-    
+
+    ///
+    /// \return the index of the value to load (where 0 is the topmost element
+    ///         on the stack, positive values indicate a deeper position on
+    ///         the stack)
+    ///
+    Word getFromTop(void) const;
+
     virtual std::string toString(void) const;
 };
 
@@ -262,21 +271,23 @@ public:
 class uetli::code::Subroutine
 {
 protected:
-    std::string name;
+    parser::Identifier name;
     size_t argumentCount;
 public:
-    Subroutine(const std::string& name, size_t argumentCount);
-    const std::string& getName(void) const;
-    size_t getArgumentCount(void) const;
-
+    Subroutine(const parser::Identifier& name,
+               size_t argumentCount);
     virtual ~Subroutine(void);
+
+    const parser::Identifier& getName(void) const;
+
+    size_t getArgumentCount(void) const;
 };
 
 
 class uetli::code::SubroutineLink : public Subroutine
 {
 public:
-    SubroutineLink(const std::string& name, size_t argumentCount);
+    SubroutineLink(const parser::Identifier& name, size_t argumentCount);
 };
 
 
@@ -289,7 +300,7 @@ protected:
     std::vector<StackInstruction*> instructions;
 
 public:
-    DirectSubroutine(Word localVariableCount, const std::string& name,
+    DirectSubroutine(Word localVariableCount, const parser::Identifier& name,
                      size_t argumentCount);
 
     virtual void execute(std::vector<void*>& stack, std::vector<void*>&) const;

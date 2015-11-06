@@ -59,6 +59,11 @@ namespace uetli
             class Field;
             class Method;
     }
+
+    namespace parser
+    {
+        class Identifier;
+    }
 }
 
 
@@ -75,6 +80,8 @@ public:
     /// \return the name of the class
     ///
     virtual const std::string& getName(void) const;
+
+    virtual parser::Identifier getIdentifier(void) const;
 };
 
 
@@ -302,7 +309,7 @@ public:
     Class* getWrapper(void);
     Class* getReturnType(void);
     const std::string& getName(void) const;
-    std::string getFullIdentifier(void) const;
+    parser::Identifier getFullIdentifier(void) const;
 };
 
 

@@ -25,9 +25,21 @@
 #include <cstdio>
 
 using namespace uetli::assembly;
+using namespace uetli::assembly::x86_64;
+
+
+const size_t AssemblySubroutine::nCallerSavedGPRegisters = 9;
+const Register AssemblySubroutine::callerSavedGPRegisters[] = {
+    RAX, RCX, RDX, RSI, RDI, R8, R9, R10, R11,
+};
+
 
 AssemblySubroutine::AssemblySubroutine(
-        const uetli::code::DirectSubroutine* subroutine)
+        const uetli::code::DirectSubroutine* subroutine) :
+    nPushedRegisters(0),
+    operationStackSize(0),
+    name(subroutine->getName()),
+    labelName(subroutine->getName().getAssemblySymbol())
 {
     generate(subroutine);
 }
@@ -44,26 +56,72 @@ std::string AssemblySubroutine::toString(void) const
 }
 
 
+const std::string& AssemblySubroutine::getLabelName(void)
+{
+    return labelName;
+}
+
+
 void AssemblySubroutine::generate(
         const uetli::code::DirectSubroutine* subroutine)
 {
     for (size_t i = 0; i < subroutine->getInstructions().size(); i++) {
         generateInstruction(subroutine->getInstructions()[i]);
     }
+    instructions.push_back(new Ret());
 }
 
 
 void AssemblySubroutine::generateInstruction(
     const uetli::code::StackInstruction* instruction)
 {
-    using uetli::code::CallInstruction;
+    using namespace uetli::code;
 
     const CallInstruction* callInst = 0;
+    const LoadInstruction* loadInst = 0;
+
     if ((callInst = dynamic_cast<const CallInstruction*>(instruction))) {
-//        uetli::assembly::x86_64::CallInstruction* c = new
-//            uetli::assembly::x86_64::CallInstruction(callInst->getName());
-//        instructions.push_back(c);
+        Call* c = new Call(
+                    callInst->getSubroutine()->getName().getAssemblySymbol());
+        instructions.push_back(c);
     }
+    if ((loadInst = dynamic_cast<const LoadInstruction*>(instruction))) {
+        Register currentReg = callerSavedGPRegisters[(operationStackSize) %
+                nCallerSavedGPRegisters];
+        if (operationStackSize >= nCallerSavedGPRegisters) {
+            Push* push = new Push(RegisterOperand::getRegisterOperand(
+                                      currentReg));
+            instructions.push_back(push);
+            nPushedRegisters++;
+        }
+
+        Source* source = new MemoryOperand (
+            RSP, nPushedRegisters + loadInst->getFromTop()
+        );
+        Mov* m = new Mov(source,
+                         RegisterOperand::getRegisterOperand(currentReg)
+        );
+        instructions.push_back(m);
+        operationStackSize++;
+    }
+}
+
+
+void AssemblySubroutine::createStackFrame(void)
+{
+    instructions.push_back(new Push(RegisterOperand::getRegisterOperand(RBP)));
+    instructions.push_back(new Mov(
+                               RegisterOperand::getRegisterOperand(RSP),
+                               RegisterOperand::getRegisterOperand(RBP)));
+}
+
+
+void AssemblySubroutine::destroyStackFrame(void)
+{
+    instructions.push_back(new Mov(
+                               RegisterOperand::getRegisterOperand(RBP),
+                               RegisterOperand::getRegisterOperand(RSP)));
+    instructions.push_back(new Pop(RegisterOperand::getRegisterOperand(RBP)));
 }
 
 
@@ -80,6 +138,19 @@ void AssemblyGenerator::generateAssembly(
 }
 
 
+void AssemblyGenerator::writeAssembly(std::ostream& file) const
+{
+    file << ".intel_syntax noprefix\n";
+
+    for (size_t i = 0; i < subroutines.size(); i++) {
+        file << subroutines[i]->getLabelName() << ":\n";
+        file << subroutines[i]->toString().c_str() << "\n";
+    }
+
+    file << "\n";
+}
+
+
 void AssemblyGenerator::assemble(const std::string& outputPath) const
 {
     FILE* process = popen((assemblerCmd + " -o " + outputPath).c_str(), "r+");
@@ -87,16 +158,7 @@ void AssemblyGenerator::assemble(const std::string& outputPath) const
     if (!process)
         return;
 
-    fprintf(process, ".intel_syntax noprefix\n");
-    fprintf(stdout, ".intel_syntax noprefix\n");
 
-    for (size_t i = 0; i < subroutines.size(); i++) {
-        fprintf(process, "%s\n", subroutines[i]->toString().c_str());
-        fprintf(stdout, "%s\n", subroutines[i]->toString().c_str());
-    }
-
-
-    fprintf(process, "\n");
     pclose(process);
 }
 

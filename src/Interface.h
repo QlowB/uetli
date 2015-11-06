@@ -26,6 +26,7 @@
 #include <cstdio>
 #include <string>
 #include <vector>
+#include <iostream>
 
 
 namespace uetli
@@ -40,11 +41,6 @@ namespace uetli
 class uetli::ConsoleInterface
 {
 protected:
-    FILE* in;
-    FILE* out;
-    FILE* error;
-
-
     std::vector<std::string> arguments;
 
 public:
@@ -52,14 +48,16 @@ public:
     ConsoleInterface(int argc, char** argv);
     virtual ~ConsoleInterface(void);
 
-    virtual int run(void) = 0;
+    virtual int run(void) throw() = 0;
 
+    virtual void printError(const std::string& error);
 };
 
 
 class uetli::UetliConsoleInterface : public ConsoleInterface
 {
     std::string outputFilename;
+    FILE* in;
     std::vector<std::string> inputFiles;
     std::vector<FILE*> openedFiles;
 
@@ -79,7 +77,10 @@ public:
     UetliConsoleInterface(int argc, char** argv);
     ~UetliConsoleInterface(void);
 
-    virtual int run(void);
+    virtual int run(void) throw();
+
+private:
+    int runInterface(void);
 };
 
 

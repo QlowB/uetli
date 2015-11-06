@@ -1,5 +1,5 @@
-CXX := clang++
-CXXFLAGS := -O3 -fPIC
+CXX := g++
+CXXFLAGS := -g -fPIC
 
 AR := ar
 

@@ -31,14 +31,22 @@ namespace uetli
     {
         namespace x86_64
         {
+            ///
+            /// \brief word size of the x64 architecture in bytes
+            ///
+            const int wordSize = 8;
 
+            ///
+            /// \brief serves as an identifier for each register of the x64
+            ///        architecture
+            ///
             enum Register
             {
                 // general purpose registers
                 RAX = 0,
-                RBX,
                 RCX,
                 RDX,
+                RBX,
                 RBP,
                 RSI,
                 RDI,
@@ -87,7 +95,10 @@ namespace uetli
                 XMM14,
 
                 RFLAGS,
-                RIP
+                RIP,
+
+                /// contains number of registers
+                registers_count
             };
 
 
@@ -103,10 +114,12 @@ namespace uetli
             struct ConstantOperand;
 
             class AssemblyInstruction;
+                class NoArgumentInstruction;
+                    class Ret;
                 class SingleRegisterInstruction;
                     class Push;
                     class Pop;
-                class CallInstruction;
+                class Call;
                 class SourceDestinationInstruction;
                     class Mov;
                     class Add;
@@ -143,6 +156,7 @@ class uetli::assembly::x86_64::RegisterOperand :
 {
     Register reg;
     RegisterOperand(Register reg);
+    static RegisterOperand* registers[registers_count];
 public:
     static const RegisterOperand* getRegisterOperand(Register reg);
 
@@ -155,8 +169,13 @@ class uetli::assembly::x86_64::MemoryOperand :
         public Destination
 {
     Register address;
-
+    Register offset;
+    /// must either be 0, 1, 2, 4 or 8
+    char offsetMultiplier;
+    long long immediateOffset;
 public:
+    MemoryOperand(Register address);
+    MemoryOperand(Register address, long long immediateOffset);
     virtual std::string toString(void) const;
 };
 
@@ -181,6 +200,22 @@ public:
     virtual ~AssemblyInstruction(void);
 
     virtual std::string toString(void) const;
+};
+
+
+class uetli::assembly::x86_64::NoArgumentInstruction :
+        public AssemblyInstruction
+{
+public:
+    NoArgumentInstruction(const std::string& instruction);
+};
+
+
+class uetli::assembly::x86_64::Ret :
+        public NoArgumentInstruction
+{
+public:
+    Ret(void);
 };
 
 
@@ -213,13 +248,14 @@ public:
 };
 
 
-class uetli::assembly::x86_64::CallInstruction : public AssemblyInstruction
+class uetli::assembly::x86_64::Call : public AssemblyInstruction
 {
     std::string labelName;
 public:
-    CallInstruction(const std::string& labelName);
+    Call(const std::string& labelName);
     const std::string& getLabelName(void) const;
 
+    virtual std::string toString(void) const;
 };
 
 

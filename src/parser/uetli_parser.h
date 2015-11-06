@@ -23,6 +23,7 @@
 #define UETLI_PARSER_UETLI_PARSER_H_
 
 #include <vector>
+#include <string>
 #include <cstdio>
 
 namespace uetli
@@ -30,6 +31,8 @@ namespace uetli
     namespace parser
     {
         struct ClassDeclaration;
+
+        class ParserException;
     }
 }
 
@@ -41,14 +44,7 @@ namespace uetli
 ///
 extern std::vector<uetli::parser::ClassDeclaration*>* parsedClasses;
 
-////
-/// \brief error output stream for the parser
 ///
-/// This stream is used as the error output by the parser.
-///
-extern FILE* uetli_parser_error_out;
-
-//
 /// \brief input stream for the parser
 ///
 /// This stream is used as the code input by the parser.
@@ -61,7 +57,18 @@ extern FILE* uetli_parser_in;
 /// This function invokes the actual parser. The result will be stored in
 /// parsedClasses.
 ///
-extern void uetli_parser_parse(void);
+/// \throws \link ParserException if there is a syntax error in the file.
+///
+extern int uetli_parser_parse(void);
+
+
+class uetli::parser::ParserException
+{
+    std::string errorMessage;
+public:
+    ParserException(const std::string& errorMessage);
+    const std::string& getErrorMessage(void) const;
+};
 
 
 #endif // UETLI_PARSER_UETLI_PARSER_H_

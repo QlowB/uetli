@@ -1,6 +1,4 @@
-CC := clang
-CCFLAGS := -fPIC -g
-CXX := clang++
+CXX := g++
 CXXFLAGS := -fPIC -g
 
 AR := ar
@@ -11,7 +9,7 @@ YACCFLAGS := -d
 LEX := flex
 LEXFLAGS :=
 
-OBJECTS := Lexer.o Parser.o ParseObject.o 
+OBJECTS := Lexer.o Parser.o ParseObject.o Identifier.o uetli_parser.o 
 LIBRARY := libuetli_parser.a
 
 
@@ -30,5 +28,3 @@ Lexer.cpp: Lexer.l
 %.o: %.cpp Parser.cpp
 	$(CXX) -c -o $@ $< $(CXXFLAGS)
 
-%.o: %.c
-	$(CC) -c -o $@ $< $(CCFLAGS)

@@ -25,11 +25,13 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 #include "Assemblyx86_64.h"
 
 #include "../code/StackMachine.h"
 #include "../util/HashMap.h"
+#include "../parser/Identifier.h"
 
 namespace uetli
 {
@@ -43,14 +45,29 @@ namespace uetli
 
 class uetli::assembly::AssemblySubroutine
 {
+private:
     std::vector<x86_64::AssemblyInstruction*> instructions;
+
+    static const size_t nCallerSavedGPRegisters;
+    static const x86_64::Register callerSavedGPRegisters[];
+
+    /// current size of the operation stack (number of elements there)
+    size_t operationStackSize;
+    size_t nPushedRegisters;
+
+    parser::Identifier name;
+    std::string labelName;
 public:
 
     AssemblySubroutine(const uetli::code::DirectSubroutine* subroutine);
     std::string toString(void) const;
+    const std::string& getLabelName(void);
 private:
     void generate(const uetli::code::DirectSubroutine* subroutine);
     void generateInstruction(const uetli::code::StackInstruction* inst);
+
+    void createStackFrame(void);
+    void destroyStackFrame(void);
 };
 
 
@@ -62,6 +79,7 @@ public:
     AssemblyGenerator(void);
 
     void generateAssembly(const uetli::code::DirectSubroutine* subroutine);
+    void writeAssembly(std::ostream& file) const;
 
     void assemble(const std::string& outputPath) const;
 };

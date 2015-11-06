@@ -23,6 +23,8 @@
 #include "AttributedSyntaxTree.h"
 #include "Scope.h"
 
+#include "../parser/Identifier.h"
+
 #include <iostream>
 
 using namespace uetli::semantic;
@@ -37,6 +39,12 @@ Class::Class(const std::string& name) :
 const std::string& Class::getName(void) const
 {
     return name;
+}
+
+
+uetli::parser::Identifier Class::getIdentifier(void) const
+{
+    return parser::Identifier(name);
 }
 
 
@@ -418,11 +426,11 @@ const std::string& Feature::getName(void) const
 }
 
 
-std::string Feature::getFullIdentifier(void) const
+uetli::parser::Identifier Feature::getFullIdentifier(void) const
 {
     if (wrapper == 0)
         throw "invalid method call (no member class found)";
-    return wrapper->getName() + "::" + name;
+    return wrapper->getIdentifier().append(name);
 }
 
 

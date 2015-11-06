@@ -100,10 +100,27 @@ RegisterOperand::RegisterOperand(Register reg) :
 }
 
 
+RegisterOperand* RegisterOperand::registers[registers_count] =
+{
+};
+
+
 const RegisterOperand* RegisterOperand::getRegisterOperand(Register reg)
 {
-    // TODO implement this more efficiently
-    return new RegisterOperand(reg);
+    static bool initialized = false;
+
+    if (!initialized) {
+        for (size_t i = 0; i < sizeof(registers) / sizeof(RegisterOperand*);
+             i++) {
+            registers[i] = new RegisterOperand((Register) i);
+        }
+        initialized = true;
+    }
+
+    if (reg >= 0 || reg < registers_count)
+        return registers[reg];
+    else
+        throw "fatal internal error";
 }
 
 
@@ -113,9 +130,34 @@ std::string RegisterOperand::toString(void) const
 }
 
 
+MemoryOperand::MemoryOperand(Register address) :
+    address(address),
+    offset(RAX),
+    offsetMultiplier(0),
+    immediateOffset(0)
+{
+}
+
+
+MemoryOperand::MemoryOperand(Register address, long long immediateOffset) :
+    address(address),
+    offset(RAX),
+    offsetMultiplier(0),
+    immediateOffset(immediateOffset)
+{
+}
+
+
 std::string MemoryOperand::toString(void) const
 {
-    return "[" + getRegisterName(address) + "]";
+    if (immediateOffset != 0 && offsetMultiplier == 0) {
+        std::stringstream str;
+        str << "[" << getRegisterName(address) << "+" << immediateOffset << "]";
+        return str.str();
+    }
+    else {
+        return "[" + getRegisterName(address) + "]";
+    }
 }
 
 
@@ -144,6 +186,18 @@ std::string AssemblyInstruction::toString(void) const
 }
 
 
+NoArgumentInstruction::NoArgumentInstruction(const std::string& instruction) :
+    AssemblyInstruction(instruction)
+{
+}
+
+
+Ret::Ret(void) :
+    NoArgumentInstruction("ret")
+{
+}
+
+
 SingleRegisterInstruction::SingleRegisterInstruction(
         const std::string& instruction, const RegisterOperand* reg) :
     AssemblyInstruction(instruction), reg(reg)
@@ -169,16 +223,22 @@ Pop::Pop(const RegisterOperand* reg) :
 }
 
 
-CallInstruction::CallInstruction(const std::string& labelName) :
+Call::Call(const std::string& labelName) :
     AssemblyInstruction("call"),
     labelName(labelName)
 {
 }
 
 
-const std::string& CallInstruction::getLabelName(void) const
+const std::string& Call::getLabelName(void) const
 {
     return labelName;
+}
+
+
+std::string Call::toString(void) const
+{
+    return instruction + " " + labelName;
 }
 
 

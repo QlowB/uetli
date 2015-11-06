@@ -27,14 +27,14 @@
 #include <iostream>
 #include <cstdio>
 #include "ParseObject.h"
+#include "uetli_parser.h"
 using namespace uetli::parser;
 
 extern int uetli_parser_lex();
-FILE* uetli_parser_error_out = stderr;
-extern int uetli_parser_error(const char*)
+
+int uetli_parser_error(const char*)
 {
-    fprintf(::uetli_parser_error_out, "Parser Error!\n");
-    return 0;
+    throw ParserException("syntax error");
 }
 
 std::vector<uetli::parser::ClassDeclaration*>* parsedClasses = 0;

@@ -39,6 +39,12 @@ void LoadInstruction::execute(std::vector<void*>& stack,
 }
 
 
+Word LoadInstruction::getFromTop(void) const
+{
+    return fromTop;
+}
+
+
 std::string LoadInstruction::toString(void) const
 {
     std::stringstream str;
@@ -157,8 +163,8 @@ void CallInstruction::execute(std::vector<void*>& stack,
 std::string CallInstruction::toString(void) const
 {
     std::stringstream str;
-    str << "call " << subroutine->getName()  << " # calls a subroutine"
-       <<  std::endl;
+    str << "call " << subroutine->getName().getAsString() <<
+           " # calls a subroutine" <<  std::endl;
     return str.str();
 }
 
@@ -242,8 +248,10 @@ std::string PrintInstruction::toString(void) const
 }
 
 
-Subroutine::Subroutine(const std::string& name, size_t argumentCount) :
-    name(name), argumentCount(argumentCount)
+Subroutine::Subroutine(const parser::Identifier& name,
+                       size_t argumentCount) :
+    name(name),
+    argumentCount(argumentCount)
 {
 }
 
@@ -253,7 +261,7 @@ Subroutine::~Subroutine(void)
 }
 
 
-const std::string& Subroutine::getName(void) const
+const uetli::parser::Identifier &Subroutine::getName(void) const
 {
     return name;
 }
@@ -265,14 +273,14 @@ size_t Subroutine::getArgumentCount(void) const
 }
 
 
-SubroutineLink::SubroutineLink(const std::string& name, size_t argumentCount) :
+SubroutineLink::SubroutineLink(const parser::Identifier &name, size_t argumentCount) :
     Subroutine(name, argumentCount)
 {
 }
 
 
 DirectSubroutine::DirectSubroutine(Word localVariableCount,
-                                   const std::string& name,
+                                   const parser::Identifier &name,
                                    size_t argumentCount) :
     Subroutine(name, argumentCount),
     localVariableCount(localVariableCount)
@@ -300,8 +308,8 @@ void DirectSubroutine::execute(std::vector<void*>& stack,
 std::string DirectSubroutine::toString(void) const
 {
     std::stringstream str;
-    str << "sub " << name << "(" << argumentCount << ") # start of subroutine"
-        << std::endl;
+    str << "sub " << name.getAsString() << "(" << argumentCount <<
+           ") # start of subroutine" << std::endl;
 
     typedef std::vector<StackInstruction*>::const_iterator InstructionIterator;
     for (InstructionIterator i = instructions.begin();

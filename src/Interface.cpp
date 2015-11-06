@@ -25,6 +25,7 @@
 #include "semantic/TreeBuilder.h"
 #include "code/StackCodeGenerator.h"
 #include "assembly/AssemblyGenerator.h"
+#include "assembly/Assemblyx86_64.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -33,8 +34,7 @@ using uetli::ConsoleInterface;
 using uetli::UetliConsoleInterface;
 
 
-ConsoleInterface::ConsoleInterface(int argc, char** argv) :
-    in(::stdin), out(::stdout), error(::stderr)
+ConsoleInterface::ConsoleInterface(int argc, char** argv)
 {
     for (int i = 0; i < argc; i++) {
         arguments.push_back(std::string(argv[i]));
@@ -44,6 +44,12 @@ ConsoleInterface::ConsoleInterface(int argc, char** argv) :
 
 ConsoleInterface::~ConsoleInterface(void)
 {
+}
+
+
+void ConsoleInterface::printError(const std::string& error)
+{
+    std::cerr << "\x1B[31;1m" "error:" "\x1b[0m" " " << error << "\n";
 }
 
 
@@ -57,14 +63,14 @@ UetliConsoleInterface::UetliConsoleInterface(int argc, char** argv) :
                 i++;
             }
             else {
-                fprintf(stderr, "no output file specified!\n");
+                printError("no output file specified");
                 fflush(stderr);
                 exit(1);
             }
         }
         else if(arguments[i] != "") { // normal string argument
             if (!inputFiles.empty()) {
-                fprintf(error, "multiple source files specified.\n");
+                printError("multiple source files specified");
                 fflush(stderr);
                 exit(1);
             }
@@ -85,22 +91,36 @@ UetliConsoleInterface::~UetliConsoleInterface(void)
 }
 
 
-int UetliConsoleInterface::run(void)
+int UetliConsoleInterface::run(void) throw()
 {
-    ::uetli_parser_in = in;                                              
-    ::uetli_parser_error_out = error;
-   
+    try {
+        runInterface();
+    }
+    catch (uetli::parser::ParserException& pe) {
+        printError(pe.getErrorMessage());
+    }
+    catch (...) {
+        printError("compilation terminated due to fatal error");
+    }
+}
+
+
+int UetliConsoleInterface::runInterface(void)
+{
+    using std::cout;
+
+    ::uetli_parser_in = stdin;
+
     bool log = true;
 
-
     if (log) {
-        fprintf(out, "starting parsing...\n");
+        cout << "starting parsing..." << std::endl;
     }
     
     ::uetli_parser_parse();
 
     if (log) {
-        fprintf(out, "done parsing\n");
+        cout << "done parsing" << std::endl;
     }
 
     for (size_t i = 0; i < openedFiles.size(); i++) {
@@ -110,7 +130,7 @@ int UetliConsoleInterface::run(void)
     openedFiles.clear(); 
 
     if (parsedClasses == 0) {
-        fprintf(out, "Aborting Compilation\n");
+        cout << "Aborting Compilation" << std::endl;
         return 1;
     }
 
@@ -120,7 +140,7 @@ int UetliConsoleInterface::run(void)
     tb.build();
 
     if (log) {
-        fprintf(out, "built attributed syntax tree.\n");
+        cout << "built attributed syntax tree." << std::endl;
     }
 
     for (size_t i = 0; i < parsedClasses->size(); i++) {
@@ -150,18 +170,32 @@ int UetliConsoleInterface::run(void)
             subroutines.push_back(rout);
         }
     }
-    
 
+
+    uetli::assembly::AssemblyGenerator assemblyGenerator;
+    for (size_t i = 0; i < subroutines.size(); i++) {
+        assemblyGenerator.generateAssembly(subroutines[i]);
+    }
+
+    for (size_t i = 0; i < subroutines.size(); i++) {
+        delete subroutines[i];
+    }
+
+#if 0
     FILE* output = 0;
-    
-    if (outputFilename != "")
+
+    if (outputFilename != "") {
         output = ::fopen(outputFilename.c_str(), "w");
+        if (!output) {
+            printError(std::string("could not create file: ") + outputFilename);
+            exit(1);
+        }
+    }
 
     if (!output) {
         for (size_t i = 0; i < subroutines.size(); i++) {
             fprintf(out, "%s\n", subroutines[i]->toString().c_str());
         }
-
     }
     else {
         for (size_t i = 0; i < subroutines.size(); i++) {
@@ -169,6 +203,9 @@ int UetliConsoleInterface::run(void)
         }
         ::fclose(output);
     }
+#endif
+
+    assemblyGenerator.writeAssembly(cout);
 
 
 
@@ -216,7 +253,7 @@ int UetliConsoleInterface::run(void)
     }
 #endif
 
-    fprintf(out, "Parsed %d classes\n", (int) classes.size());
+    cout << "Parsed " << classes.size() << " classes" << std::endl;
 
     return 0;
 }

@@ -94,7 +94,7 @@ UetliConsoleInterface::~UetliConsoleInterface(void)
 int UetliConsoleInterface::run(void) throw()
 {
     try {
-        runInterface();
+        return runInterface();
     }
     catch (uetli::parser::ParserException& pe) {
         printError(pe.getErrorMessage());
@@ -102,6 +102,7 @@ int UetliConsoleInterface::run(void) throw()
     catch (...) {
         printError("compilation terminated due to fatal error");
     }
+    return 1;
 }
 
 

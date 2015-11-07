@@ -59,7 +59,20 @@ std::string Identifier::getAssemblySymbol(void) const
 {
     std::string identifier;
     for (size_t i = 0; i < segments.size(); i++) {
-        identifier += segments[i];
+        const std::string& seg = segments[i];
+        if (seg == "*") {
+            identifier += "ASTERISK";
+        }
+        else if (seg == "-") {
+            identifier += "MINUS";
+        }
+        else if (seg == "+") {
+            identifier += "PLUS";
+        }
+        else {
+            identifier += segments[i];
+        }
+
         if (i + 1 < segments.size())
             identifier += "__";
     }

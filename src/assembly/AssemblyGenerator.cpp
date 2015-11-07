@@ -96,7 +96,7 @@ void AssemblySubroutine::generateInstruction(
         }
 
         Source* source = new MemoryOperand (
-            RSP, nPushedRegisters + loadInst->getFromTop()
+            RSP, wordSize * (nPushedRegisters + loadInst->getFromTop())
         );
         Mov* m = new Mov(source,
                          RegisterOperand::getRegisterOperand(currentReg)

@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -g
+CXXFLAGS := -g -Wall
 LINKFLAGS :=
 
 YACC := bison
@@ -32,6 +32,6 @@ $(EXECUTABLE): $(OBJECTS)
 
 
 clear:
-	rm -f *.o *.a parser/*.o parser/*.a semantic/*.o semantic/*.a code/*.o code/*.a util/*.o uetli/*.a assembly/*.o assembly/*.a
+	rm -f *.o  */*.o parser/Parser.cpp parser/Lexer.cpp
 
 

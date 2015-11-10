@@ -25,7 +25,7 @@
 
 #include <vector>
 #include <string>
-#include <iostream>
+#include <cstdio>
 
 #include "Assemblyx86_64.h"
 
@@ -68,6 +68,9 @@ private:
 
     void createStackFrame(void);
     void destroyStackFrame(void);
+
+    void saveNeededRegisters(void);
+    void restoreNeededRegisters(void);
 };
 
 
@@ -79,7 +82,7 @@ public:
     AssemblyGenerator(void);
 
     void generateAssembly(const uetli::code::DirectSubroutine* subroutine);
-    void writeAssembly(std::ostream& file) const;
+    void writeAssembly(FILE* file) const;
 
     void assemble(const std::string& outputPath) const;
 };

@@ -54,7 +54,8 @@ void ConsoleInterface::printError(const std::string& error)
 
 
 UetliConsoleInterface::UetliConsoleInterface(int argc, char** argv) :
-    ConsoleInterface(argc, argv)
+    ConsoleInterface(argc, argv),
+    outputFilename("a.out")
 {
     for (size_t i = 1; i < arguments.size(); i++) {
         if (arguments[i] == "-o") {
@@ -206,8 +207,15 @@ int UetliConsoleInterface::runInterface(void)
     }
 #endif
 
-    assemblyGenerator.writeAssembly(cout);
 
+    assemblyGenerator.writeAssembly(stdout);
+
+
+    FILE* assembler =
+        ::popen((std::string("as -o ") + outputFilename).c_str(), "w"); // r+
+
+    assemblyGenerator.writeAssembly(assembler);
+    ::pclose(assembler);
 
 
 #if 0

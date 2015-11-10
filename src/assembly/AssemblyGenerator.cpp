@@ -36,8 +36,8 @@ const Register AssemblySubroutine::callerSavedGPRegisters[] = {
 
 AssemblySubroutine::AssemblySubroutine(
         const uetli::code::DirectSubroutine* subroutine) :
-    nPushedRegisters(0),
     operationStackSize(0),
+    nPushedRegisters(0),
     name(subroutine->getName()),
     labelName(subroutine->getName().getAssemblySymbol())
 {
@@ -83,7 +83,9 @@ void AssemblySubroutine::generateInstruction(
     if ((callInst = dynamic_cast<const CallInstruction*>(instruction))) {
         Call* c = new Call(
                     callInst->getSubroutine()->getName().getAssemblySymbol());
+        saveNeededRegisters();
         instructions.push_back(c);
+        restoreNeededRegisters();
     }
     if ((loadInst = dynamic_cast<const LoadInstruction*>(instruction))) {
         Register currentReg = callerSavedGPRegisters[(operationStackSize) %
@@ -125,6 +127,32 @@ void AssemblySubroutine::destroyStackFrame(void)
 }
 
 
+void AssemblySubroutine::saveNeededRegisters(void)
+{
+    size_t regs = nCallerSavedGPRegisters;
+    if (operationStackSize < regs)
+        regs = operationStackSize;
+    for (size_t i = 0; i < regs; i++) {
+        Register currentReg = callerSavedGPRegisters[i];
+        Push* push = new Push(RegisterOperand::getRegisterOperand(currentReg));
+        instructions.push_back(push);
+    }
+}
+
+
+void AssemblySubroutine::restoreNeededRegisters(void)
+{
+    size_t regs = nCallerSavedGPRegisters;
+    if (operationStackSize < regs)
+        regs = operationStackSize;
+    for (size_t i = regs; i > 0; i--) {
+        Register currentReg = callerSavedGPRegisters[i - 1];
+        Pop* pop = new Pop(RegisterOperand::getRegisterOperand(currentReg));
+        instructions.push_back(pop);
+    }
+}
+
+
 AssemblyGenerator::AssemblyGenerator(void) :
     assemblerCmd("as")
 {
@@ -138,16 +166,16 @@ void AssemblyGenerator::generateAssembly(
 }
 
 
-void AssemblyGenerator::writeAssembly(std::ostream& file) const
+void AssemblyGenerator::writeAssembly(FILE* file) const
 {
-    file << ".intel_syntax noprefix\n";
+    fprintf(file, ".intel_syntax noprefix\n");
 
     for (size_t i = 0; i < subroutines.size(); i++) {
-        file << subroutines[i]->getLabelName() << ":\n";
-        file << subroutines[i]->toString().c_str() << "\n";
+        fprintf(file, "%s:\n", subroutines[i]->getLabelName().c_str());
+        fprintf(file, "%s\n", subroutines[i]->toString().c_str());
     }
 
-    file << "\n";
+    fprintf(file, "\n");
 }
 
 

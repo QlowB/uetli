@@ -104,14 +104,14 @@ namespace uetli
 
             const std::string& getRegisterName(Register reg);
 
-            struct Operand;
+            class Operand;
 
-            struct Source;
-            struct Destination;
+            class Source;
+            class Destination;
 
-            struct RegisterOperand;
-            struct MemoryOperand;
-            struct ConstantOperand;
+            class RegisterOperand;
+            class MemoryOperand;
+            class ConstantOperand;
 
             class AssemblyInstruction;
                 class NoArgumentInstruction;

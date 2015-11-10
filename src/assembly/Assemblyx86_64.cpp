@@ -238,7 +238,7 @@ const std::string& Call::getLabelName(void) const
 
 std::string Call::toString(void) const
 {
-    return instruction + " " + labelName;
+    return instruction + " " + ".text:" + labelName;
 }
 
 

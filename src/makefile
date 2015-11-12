@@ -1,4 +1,4 @@
-CXX := g++
+CXX := clang++
 CXXFLAGS := -g -Wall
 LINKFLAGS :=
 

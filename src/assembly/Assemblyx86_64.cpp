@@ -148,6 +148,16 @@ MemoryOperand::MemoryOperand(Register address, long long immediateOffset) :
 }
 
 
+MemoryOperand::MemoryOperand(Register address, Register offset,
+                             char offsetMultiplier, long long immediateOffset) :
+    address(address),
+    offset(offset),
+    offsetMultiplier(offsetMultiplier),
+    immediateOffset(immediateOffset)
+{
+}
+
+
 std::string MemoryOperand::toString(void) const
 {
     if (immediateOffset != 0 && offsetMultiplier == 0) {
@@ -155,8 +165,11 @@ std::string MemoryOperand::toString(void) const
         str << "[" << getRegisterName(address) << "+" << immediateOffset << "]";
         return str.str();
     }
-    else {
-        return "[" + getRegisterName(address) + "]";
+    else if (offsetMultiplier != 0) {
+        std::stringstream str;
+        str << "[" + getRegisterName(address) << "+" << getRegisterName(offset)
+            << "*" << offsetMultiplier << "+" << immediateOffset << "]";
+        return str;
     }
 }
 

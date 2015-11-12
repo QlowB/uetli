@@ -176,6 +176,8 @@ class uetli::assembly::x86_64::MemoryOperand :
 public:
     MemoryOperand(Register address);
     MemoryOperand(Register address, long long immediateOffset);
+    MemoryOperand(Register address, Register offset, char offsetMultiplier,
+                  long long immediateOffset);
     virtual std::string toString(void) const;
 };
 

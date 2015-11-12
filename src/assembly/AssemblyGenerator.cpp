@@ -81,13 +81,17 @@ void AssemblySubroutine::generateInstruction(
     const LoadInstruction* loadInst = 0;
 
     if ((callInst = dynamic_cast<const CallInstruction*>(instruction))) {
+        
         Call* c = new Call(
                     callInst->getSubroutine()->getName().getAssemblySymbol());
-        saveNeededRegisters();
+        if (!registersSaved)
+            saveNeededRegisters();
         instructions.push_back(c);
-        restoreNeededRegisters();
     }
     if ((loadInst = dynamic_cast<const LoadInstruction*>(instruction))) {
+        if (registersSaved)
+            restoreNeededRegisters();
+
         Register currentReg = callerSavedGPRegisters[(operationStackSize) %
                 nCallerSavedGPRegisters];
         if (operationStackSize >= nCallerSavedGPRegisters) {
@@ -137,6 +141,7 @@ void AssemblySubroutine::saveNeededRegisters(void)
         Push* push = new Push(RegisterOperand::getRegisterOperand(currentReg));
         instructions.push_back(push);
     }
+    registersSaved = true;
 }
 
 
@@ -150,6 +155,7 @@ void AssemblySubroutine::restoreNeededRegisters(void)
         Pop* pop = new Pop(RegisterOperand::getRegisterOperand(currentReg));
         instructions.push_back(pop);
     }
+    registersSaved = false;
 }
 
 

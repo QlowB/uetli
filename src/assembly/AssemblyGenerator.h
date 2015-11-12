@@ -55,6 +55,10 @@ private:
     size_t operationStackSize;
     size_t nPushedRegisters;
 
+    /// determines weather the operation stack in the registers has been
+    /// saved on the stack (e.g to call a function)
+    bool registersSaved;
+
     parser::Identifier name;
     std::string labelName;
 public:

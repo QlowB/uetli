@@ -34,6 +34,12 @@ const Register AssemblySubroutine::callerSavedGPRegisters[] = {
 };
 
 
+const size_t AssemblySubroutine::nCallerSavedGPRegisters = 6;
+const Register AssemblySubroutine::callerSavedGPRegisters[] = {
+    RDI, RSI, RDX, RCX, R8, R9
+};
+
+
 AssemblySubroutine::AssemblySubroutine(
         const uetli::code::DirectSubroutine* subroutine) :
     operationStackSize(0),
@@ -86,6 +92,13 @@ void AssemblySubroutine::generateInstruction(
                     callInst->getSubroutine()->getName().getAssemblySymbol());
         if (!registersSaved)
             saveNeededRegisters();
+        size_t nArguments = callInst->getSubroutine()->getArgumentCount();
+        if (nArguments >= nArgumentRegisters) {
+            throw "too many arguments; not yet implemented";
+        }
+        for (size_t i = 0; i < nArguments; i++) {
+
+        }
         instructions.push_back(c);
     }
     if ((loadInst = dynamic_cast<const LoadInstruction*>(instruction))) {
@@ -159,8 +172,7 @@ void AssemblySubroutine::restoreNeededRegisters(void)
 }
 
 
-AssemblyGenerator::AssemblyGenerator(void) :
-    assemblerCmd("as")
+AssemblyGenerator::AssemblyGenerator(void)
 {
 }
 
@@ -183,17 +195,4 @@ void AssemblyGenerator::writeAssembly(FILE* file) const
 
     fprintf(file, "\n");
 }
-
-
-void AssemblyGenerator::assemble(const std::string& outputPath) const
-{
-    FILE* process = popen((assemblerCmd + " -o " + outputPath).c_str(), "r+");
-
-    if (!process)
-        return;
-
-
-    pclose(process);
-}
-
 

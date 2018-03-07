@@ -51,6 +51,9 @@ private:
     static const size_t nCallerSavedGPRegisters;
     static const x86_64::Register callerSavedGPRegisters[];
 
+    static const size_t nArgumentRegisters;
+    static const x86_64::Register argumentRegisters[];
+
     /// current size of the operation stack (number of elements there)
     size_t operationStackSize;
     size_t nPushedRegisters;
@@ -81,14 +84,11 @@ private:
 class uetli::assembly::AssemblyGenerator
 {
     std::vector<AssemblySubroutine*> subroutines;
-    std::string assemblerCmd;
 public:
     AssemblyGenerator(void);
 
     void generateAssembly(const uetli::code::DirectSubroutine* subroutine);
     void writeAssembly(FILE* file) const;
-
-    void assemble(const std::string& outputPath) const;
 };
 
 

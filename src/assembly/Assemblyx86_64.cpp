@@ -169,7 +169,7 @@ std::string MemoryOperand::toString(void) const
         std::stringstream str;
         str << "[" + getRegisterName(address) << "+" << getRegisterName(offset)
             << "*" << offsetMultiplier << "+" << immediateOffset << "]";
-        return str;
+        return str.str();
     }
 }
 
